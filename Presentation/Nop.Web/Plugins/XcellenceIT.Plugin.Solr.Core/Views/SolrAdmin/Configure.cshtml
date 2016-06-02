@@ -1,0 +1,765 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *   
+ *                                                                       *
+ ************************************************************************* *@
+
+@{
+    Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+}
+@model XcellenceIT.Plugin.Solr.Core.Models.SolrCoreModel
+@using Nop.Services.Configuration;
+@using Nop.Core.Infrastructure;
+@using Nop.Web.Framework;
+@using System.Web;
+
+@{
+    @Html.AntiForgeryToken()
+    var storeUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + HttpContext.Current.Request.ApplicationPath;
+    ViewBag.Url = storeUrl;
+    if (!storeUrl.Last().Equals('/'))
+    {
+        ViewBag.Url = storeUrl + "/";
+    }
+}
+<link rel="stylesheet" href="~/Plugins/XcellenceIT.Plugin.Solr.Core/Content/jquery-ui-themes/smoothness/jquery-ui-1.10.0.custom.min.css" />
+<link rel="stylesheet" href="~/Plugins/XcellenceIT.Plugin.Solr.Core/Content/nopaccelerate-core.css" />
+<script src="~/Plugins/XcellenceIT.Plugin.Solr.Core/Scripts/jquery-ui-1.10.0.min.js"></script>
+
+<style>
+    .ui-progressbar {
+        position: relative;
+    }
+
+    .progress-label {
+        position: absolute;
+        left: 50%;
+        top: 4px;
+        font-weight: bold;
+        text-shadow: 1px 1px 0 #fff;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+   
+    <div class="license-Details-@(ViewBag.Status)">
+        @if (ViewBag.Status == 102)
+        {
+            <div class="license-notice"><p class="alert-info">@T("Plugins.XcellenceIT.Solr.Core.Fields.Licensenotice.OneZeroTwo")</p></div>
+        }
+        else if (ViewBag.Status == 103)
+        {
+            <div class="license-notice"><p class="alert-danger">@T("Plugins.XcellenceIT.Solr.Core.Fields.Licensenotice.OneZeroThree")</p></div>
+        }
+        else if (ViewBag.Status == 108)
+        {
+            bool displayNotice = Convert.ToBoolean(ViewBag.DisplayNotice);
+            <div class="license-notice">@Html.Raw(ViewBag.Free)</div>
+            if (displayNotice)
+            {
+                <div class="license-notice"><p class="alert-warning">@T("Plugins.XcellenceIT.Solr.Core.Fields.Licensenotice.OneZeroEight")</p></div>
+            }
+        }
+        else if (ViewBag.Status == 104)
+        {
+            <div class="license-notice"><p class="alert-success">@T("Plugins.XcellenceIT.Solr.Core.Fields.Licensenotice.OneZeroFour")</p></div>
+        }
+        <div class="line"><hr></div>
+        <div class="license-wrapper">
+            <div class="domain-name">
+                <ul>
+                    <li class="license-domain"><span class="title">@Html.NopLabelFor(model => model.Domain):</span></li>
+                    <li>@Html.DisplayFor(model => model.Domain)</li>
+                </ul>
+            </div>
+            <div class="product-limit">
+                <ul>
+                    <li class="limit"><span class="title">@Html.NopLabelFor(model => model.ProductLimit):</span></li>
+                    <li>@Html.DisplayFor(model => model.ProductLimit)</li>
+                </ul>
+            </div>
+            <div class="license-status">
+                <ul>
+                    <li class="status"><span class="title">@Html.NopLabelFor(model => model.LicStatus):</span></li>
+                    <li class="license-value">@Html.DisplayFor(model => model.LicStatus)</li>
+                </ul>
+            </div>
+            <div class="license-type">
+                <ul>
+                    <li class="status"><span class="title">@Html.NopLabelFor(model => model.LicenseType):</span></li>
+                    <li>@Html.DisplayFor(model => model.LicenseType)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header" id="section-header">
+        <div class="title">
+            <img src="@Url.Content("~/Administration/Content/images/ico-configuration.png")" alt="" />
+            nopAccelerate Solr Core Admin
+        </div>
+    </div>
+    <div id="product-edit">
+        <ul>
+            <li @Html.RenderSelectedTabIndex(0, GetSelectedTabIndex())>
+                @T("Plugins.XcellenceIT.Solr.Core.Fields.Configure")
+            </li>
+            <li @Html.RenderSelectedTabIndex(1, GetSelectedTabIndex())>
+                @T("Plugins.XcellenceIT.Solr.Core.Fields.MarkProductAsPending")
+            </li>
+            <li @Html.RenderSelectedTabIndex(1, GetSelectedTabIndex())>
+                @T("Plugins.XcellenceIT.Solr.Core.Fields.MarkProductAsDelete")
+            </li>
+        </ul>
+        <div>
+            @TabSolrConfig()
+        </div>
+        <div>
+            @TabAddProduct()
+        </div>
+        <div>
+            @TabDeleteProduct()
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("#product-edit").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                },
+                select: tabstrip_on_tab_select
+            });
+        });
+    </script>
+}
+
+@helper TabSolrConfig()
+{
+    <div id="coreconfiguration-grid"></div>
+    <script type="text/javascript">
+    var IsValidCoreLanguageMapping = true;
+    //local datasource
+    var allStores = [
+        @for (int i = 0; i < Model.AvailableStores.Count; i++)
+            {
+                var storeItem = Model.AvailableStores[i];
+                <text>
+            {
+                StoreId: @(storeItem.Value),
+                storeName: "@(Html.Raw(HttpUtility.JavaScriptStringEncode(storeItem.Text)))"
+            }
+            </text>
+                if (i != Model.AvailableStores.Count - 1)
+                {
+                    <text>,</text>
+                }
+            }
+    ];
+
+    //local datasource
+    var allLanguages = [
+        @for (int i = 0; i < Model.AllMappedLanguagesWithStore.Count; i++)
+            {
+                var languageItem = Model.AllMappedLanguagesWithStore[i];
+                <text>
+            {
+                LanguageId: @(languageItem.Id),
+                languageName: "@(Html.Raw(HttpUtility.JavaScriptStringEncode(languageItem.Name)))",
+                StoreId: @(languageItem.StoreId),
+            }
+            </text>
+                if (i != Model.AllMappedLanguagesWithStore.Count - 1)
+                {
+                    <text>,</text>
+                }
+            }
+    ];
+
+    $("#coreconfiguration-grid").kendoGrid({
+        dataSource: {
+            type: "json",
+            transport: {
+                read: {
+                    url: "@Html.Raw(Url.Action("SolrCoreConfigurationList", "SolrAdmin", new RouteValueDictionary() { { "Namespaces", "XcellenceIT.Plugin.Solr.Core.Controllers" }, { "area", "" } }))",
+                    type: "POST",
+                    dataType: "json",
+                    data: addAntiForgeryToken
+                },
+                create: {
+                    url: "@Html.Raw(Url.Action("SolrCoreConfigurationInsert", "SolrAdmin", new RouteValueDictionary() { { "Namespaces", "XcellenceIT.Plugin.Solr.Core.Controllers" }, { "area", "" } }))",
+                    type: "POST",
+                    dataType: "json",
+                    data: addAntiForgeryToken
+                },
+                update: {
+                    url: "@Html.Raw(Url.Action("SolrCoreConfigurationUpdate", "SolrAdmin", new RouteValueDictionary() { { "Namespaces", "XcellenceIT.Plugin.Solr.Core.Controllers" }, { "area", "" } }))",
+                    type: "POST",
+                    dataType: "json",
+                    data: addAntiForgeryToken
+                },
+                destroy: {
+                    url: "@Html.Raw(Url.Action("SolrCoreConfigurationDelete", "SolrAdmin", new RouteValueDictionary() { { "Namespaces", "XcellenceIT.Plugin.Solr.Core.Controllers" }, { "area", "" } }))",
+                    type: "POST",
+                    dataType: "json",
+                    data: addAntiForgeryToken
+                }
+            },
+            schema: {
+                data: "Data",
+                total: "Total",
+                errors: "Errors",
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id: { editable: false, type: "number" },
+                        RowNumber: { editable: false, type: "number" },
+                        StoreId: { editable: true, type: "number" },
+                        Store: { editable: true, type: "number" },
+                        LanguageId: { editable: true, type: "number" },
+                        Language: { editable: true, type: "number" },
+                        CoreURL: { editable: true, type: "string", validation: { required: true } },
+                        PercentCompletion: { editable: false, type: "string" },
+                        Status: { editable: false, type: "string" },
+                        IsValidCoreLanguageMapping: { editable: false, type: "bool", validation: { required: true } },
+                    }
+                }
+            },
+            requestEnd: function (e) {
+                if (e.type == "create" || e.type == "update") {
+                    this.read();
+                }
+            },
+            error: function (e) {
+                display_kendoui_grid_error(e);
+                this.cancelChanges(); // Cancel the changes
+            },
+            serverPaging: true,
+            pageSize: 10,
+            serverFiltering: true,
+            serverSorting: true,
+            selectable: true
+        },
+        pageable: {
+            refresh: true,
+            numeric: false,
+            previousNext: false,
+            info: false
+        },
+        toolbar: ["create"],
+            dataBound: function (e) {
+                markRowsAsUnMapped();
+		},
+        save: function(e) {
+            if (e.model.isNew()) {
+                //for some reasons (maybe, bug) it always sends 0, so did little hack here
+                //re-assign the selected value of kendoui dropdownlist datasource from hidden input
+                var objDropDown = $("div#coreconfiguration-grid table tr td span.k-dropdown");
+                $.each(objDropDown, function(ele) {
+                    if($(objDropDown[ele]).parent('td').find('input#StoreId').length > 0){
+                        e.model.StoreId = $(objDropDown[ele]).parent('td').find('input#StoreId').val();
+                    }
+                    if($(objDropDown[ele]).parent('td').find('input#LanguageId').length > 0){
+                        e.model.LanguageId = $(objDropDown[ele]).parent('td').find('input#LanguageId').val();
+                    }
+                });
+
+                var data = this.dataSource.data();
+                for(item in data){
+                    if(item != 0)//To ignore first row that we are adding..
+                    {
+                        if((data[item].StoreId == e.model.StoreId) && (data[item].LanguageId == e.model.LanguageId)){
+                            e.preventDefault();
+                            alert("Sorry! You can not create core with same store and language because it already exists!");
+                        }
+                    }
+                }
+            }
+        },
+        edit: function(e) {
+            if (e.model.isNew()) {
+                if ('@ViewBag.Status' == 108) {
+                    if($("div#coreconfiguration-grid table tbody tr").length > 1){
+                        $("div#coreconfiguration-grid table tr.k-grid-edit-row:first").remove();
+                        alert("@T("Plugins.XcellenceIT.Solr.Core.Fields.Licensenotice.OneZeroEight.AlertMessage")");
+                    }
+                }
+            }
+        },
+        editable: {
+            confirmation: true,
+            mode: "inline"
+        },
+        scrollable: false,
+        columns: [{
+            field: "RowNumber",
+            title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.SrNo")",
+            width: 30,
+            template: "#:RowNumber#",
+            headerAttributes: { style: "text-align:center" },
+            attributes: { style: "text-align:center" },
+        },
+        {
+            field: "StoreId",
+            title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.StoreName")",
+            editor: function(container) {
+                var input = $('<input id="StoreId" name="StoreId">');
+                input.appendTo(container);
+                input.kendoDropDownList({ // initialize a dropdownlist
+                    dataTextField: "storeName",
+                    dataValueField: "StoreId",
+                    dataSource: allStores
+                }).appendTo(container);
+            },
+            template: "#= storeName(StoreId) #",
+            headerAttributes: { style: "text-align:center" },
+            attributes: { style: "text-align:center" },
+        },
+        {
+            field: "LanguageId",
+            title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.LanguageName")",
+            editor: function(container) {
+                var input = $('<input id="LanguageId" name="LanguageId">');
+                input.appendTo(container);
+                input.kendoDropDownList({ // initialize a dropdownlist
+                    dataTextField: "languageName",
+                    dataValueField: "LanguageId",
+                    cascadeFrom: "StoreId", // cascade from the Store dropdownlist
+                    dataSource: allLanguages
+                }).appendTo(container);
+            },
+            //template: "#= languageName(LanguageId) #",
+            template: "# if (IsValidCoreLanguageMapping) { # #:languageName(LanguageId)# # } else { # <div class='unmapped'>#:languageName(LanguageId)#<span class='unmappedMsg'>This language is not mapped properly with this store, so won't work correctly!</span></div> # } #",
+            headerAttributes: { style: "text-align:center" },
+            attributes: { style: "text-align:center" },
+        },
+        {
+            field: "CoreURL",
+            title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.CoreURL")",
+            width: 225,
+            template: '<span>#:CoreURL#</span>',
+            headerAttributes: { style: "text-align:center" },
+            attributes: { style: "text-align:center" },
+        },
+        {
+            field: "Status",
+            title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.Status")",
+            template: '<input type="button" class="k-button checkConnectivity" name="checkConnectivity" value="@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.CheckConnectivity")" />' +
+                      '<input type="button" class="k-button startIndexing" name="startIndexing" value="@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.StartIndexing")" />' +
+                      '<input type="button" class="k-button markAllPending" name="markAllPending" value="@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.MarkAllPending")" />' +
+                      '<input type="hidden" value="#:StoreId#" id="hdnStoreId" />' +
+                      '<input type="hidden" value="#:LanguageId#" id="hdnLanguageId" />',
+            headerAttributes: { style: "text-align:center" },
+            attributes: { style: "text-align:center" },
+        },
+        {
+            field: "PercentCompletion",
+            title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.PercentCompletion")",
+            width: 120,
+            template: "#:PercentCompletion# %" + '</br> <a href="javascript:" class="percentCompletion">Refresh</a>',
+            headerAttributes: { style: "text-align:center" },
+            attributes: { style: "text-align:center" },
+    },
+    {
+    command: [{
+        name: "edit",
+        confirmation: false,
+        text: "@T("Admin.Common.Edit")"
+    },
+    {
+        name: "destroy",
+        confirmation: true,
+        text: "@T("Admin.Common.Delete")"
+    }],
+        width: 180,
+    headerAttributes: { style: "text-align:center" },
+    attributes: { style: "text-align:center" },
+    }]
+    });
+
+    function storeName(StoreId) {
+        for (var i = 0; i < allStores.length; i++) {
+            if (allStores[i].StoreId == StoreId) {
+                return allStores[i].storeName;
+            }
+        }
+    }
+
+    function languageName(LanguageId) {
+        for (var i = 0; i < allLanguages.length; i++) {
+            if (allLanguages[i].LanguageId == LanguageId) {
+                return allLanguages[i].languageName;
+            }
+        }
+    }
+
+    function markRowsAsUnMapped()
+    {
+        //mark unmapped rows as red background..
+        var unmappedRows = $("div#coreconfiguration-grid table tbody tr").find('div.unmapped');
+        if(unmappedRows.length > 0)
+        {
+            $.each(unmappedRows, function(ele) {
+                var row = $(this).closest('tr');
+                $(row).css('background', '#f2dede');
+                $(row).find('input[type="button"].checkConnectivity').addClass('click-not-allowed').prop("disabled", true);
+                $(row).find('input[type="button"].startIndexing').addClass('click-not-allowed').prop("disabled", true);
+                $(row).find('input[type="button"].markAllPending').addClass('click-not-allowed').prop("disabled", true);
+                $(row).find('a.k-grid-edit').addClass('click-not-allowed').prop("disabled", true);
+            });
+        }
+    }
+
+    $(document).ready(function(){
+
+        markRowsAsUnMapped();
+
+        $('div#coreconfiguration-grid div a.k-grid-add').live('click', function() {
+            if(this){
+                $("div#coreconfiguration-grid table tr.k-grid-edit-row td input.startIndexing:first").addClass('click-not-allowed');
+                $("div#coreconfiguration-grid table tr.k-grid-edit-row td input.markAllPending:first").addClass('click-not-allowed');
+            }
+        });
+
+        $('a.k-grid-edit').live('click', function() {
+            if(this){
+                var objDropDown = $("div#coreconfiguration-grid table tr td span.k-dropdown");
+                $.each(objDropDown, function(ele) {
+                    var selectedValue = $(objDropDown[ele]).find("span.k-input").html();
+                    $(objDropDown[ele]).parent('td').append(selectedValue);
+                    $(objDropDown[ele]).remove();
+                });
+            }
+        });
+
+        $('input[type="button"].checkConnectivity').live('click', function() {
+            var coreURL = $(this).parent().prev('td').text();
+            if(coreURL == ''){
+                coreURL = $(this).parent().prev('td').find('input').val();
+            }
+            var checkSolrConnectionUrl = '@ViewBag.Url' + "Admin/Plugins/SolrCore/SolrAdmin/CheckSolrConnection/";
+            checkSolrConnectionUrl = checkSolrConnectionUrl + "?coreURL=" + coreURL;
+            $.ajax({
+                //type: 'POST',
+                url: checkSolrConnectionUrl,
+                success: function (data) {
+                    alert(data);
+                }
+            });
+            return false;
+        });
+
+        $('input[type="button"].startIndexing').live('click', function() {
+            if($(this).hasClass('click-not-allowed')){
+                alert("@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.StartIndexing.AlertMessage")");
+            }
+            else{
+                $('input[type="button"].startIndexing').addClass('click-not-allowed').prop("disabled", true);
+                var StoreId = $(this).parent('td').find('input#hdnStoreId').val();
+                var LanguageId = $(this).parent('td').find('input#hdnLanguageId').val();
+                var startProcessUrl = '@ViewBag.Url' + "Admin/Plugins/SolrCore/SolrAdmin/StartProcess";
+                startProcessUrl = startProcessUrl + "?storeId=" + StoreId + "&languageId=" + LanguageId;
+                $.ajax({
+                    //type: 'POST',
+                    url: '@Url.RouteUrl("XcellenceIT.Plugin.Solr.Core.StartProcess")',
+                    data: {storeId: StoreId, languageId: LanguageId},
+                    success: function (data) {
+                        $('input[type="button"].startIndexing').removeClass('click-not-allowed').prop("disabled", false);
+                        $('#coreconfiguration-grid').data('kendoGrid').dataSource.read();
+                        $('#coreconfiguration-grid').data('kendoGrid').refresh();
+                    },
+                    error: function(){
+                        alert("Error Happend!");
+                        $('input[type="button"].startIndexing').removeClass('click-not-allowed').prop("disabled", false);
+                    }
+                });
+                return false;
+            }
+        });
+
+        $('input[type="button"].markAllPending').live('click', function() {
+            if($(this).hasClass('click-not-allowed')){
+                alert("@T("Plugins.XcellenceIT.Solr.Core.Fields.Configure.MarkAllPending.AlertMessage")");
+            }else{
+                var StoreId = $(this).parent('td').find('input#hdnStoreId').val();
+                var LanguageId = $(this).parent('td').find('input#hdnLanguageId').val();
+                var fullReIndexUrl = '@ViewBag.Url' + "Admin/Plugins/SolrCore/SolrAdmin/FullReIndex/";
+                fullReIndexUrl = fullReIndexUrl + "?StoreId=" + StoreId + "&LanguageId=" + LanguageId;
+                $.ajax({
+                    //type: 'POST',
+                    url: fullReIndexUrl,
+                    success: function (data) {
+                        alert(data);
+                        $('#coreconfiguration-grid').data('kendoGrid').dataSource.read();
+                        $('#coreconfiguration-grid').data('kendoGrid').refresh();
+                    }
+                });
+                return false;
+            }
+        });
+
+        $('a.percentCompletion').live('click', function() {
+            var coreURL = $(this).parent('td').prev('td').prev('td').text();            
+            var checkSolrConnectionUrl = '@ViewBag.Url' + "Admin/Plugins/SolrCore/SolrAdmin/CheckSolrConnection/";
+            checkSolrConnectionUrl = checkSolrConnectionUrl + "?coreURL=" + coreURL;
+
+            $.ajax({
+                //type: 'POST',
+                url: checkSolrConnectionUrl,
+                success: function (data) {
+                    if(!data.contains("successful")) {
+                        alert(data);
+                    }                        
+                },
+                error:  function () {
+                    alert("Could not connect to Solr");
+                }   
+            });
+
+            var StoreId = $(this).parent('td').prev('td').find('input#hdnStoreId').val();
+            var LanguageId = $(this).parent('td').prev('td').find('input#hdnLanguageId').val();
+            var percentageUrl = '@ViewBag.Url' + "Admin/Plugins/SolrCore/SolrAdmin/PercentageOfCompletion";
+            percentageUrl = percentageUrl + "?storeId=" + StoreId + "&languageId=" + LanguageId;
+            $.ajax({
+                //type: 'POST',
+                url: percentageUrl,
+                success: function (data) {               
+                    $('#coreconfiguration-grid').data('kendoGrid').dataSource.read();
+                    $('#coreconfiguration-grid').data('kendoGrid').refresh();
+                }                    
+            });
+            return false;
+        });
+
+        $('#stopindexing').live('click', function() {
+            alert('This will stop only the running indexnig process. Indexing process will start automatically as per the schedule task time configured.');
+        });
+
+    });
+    </script>
+    <style type="text/css">
+        .click-not-allowed {
+            cursor: not-allowed;
+        }
+        div.unmapped {
+            border-bottom: 1px dotted #333;
+            color: #333;
+            text-decoration: none;
+        }
+            div.unmapped:hover {
+                cursor: pointer;
+            }
+            div.unmapped span {
+                display: none;
+            }
+            div.unmapped:hover span.unmappedMsg {
+                padding: 7px;
+                display: block;
+                color: #333;
+                margin: -25px 0 0 75px;
+                position: absolute;
+                z-index:10000;
+                -moz-border-radius: 5px;
+                -webkit-border-radius: 5px;
+                border-radius: 5px;
+                -moz-box-shadow: 0px 0px 4px #222;
+                -webkit-box-shadow: 0px 0px 4px #222;
+                box-shadow: 0px 0px 4px #222;
+                background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);
+                background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #eeeeee),color-stop(1, #cccccc));
+                background-image: -webkit-linear-gradient(top, #eeeeee, #cccccc);
+                background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);
+                background-image: -ms-linear-gradient(top, #eeeeee, #cccccc);
+                background-image: -o-linear-gradient(top, #eeeeee, #cccccc);
+            }        
+    </style>
+    <br />
+    <b>(Note: We suggest you to un-publish the language until the Core is configured and fully indexed. You can still index data for unpublished language.)</b>
+    <br />
+    <br />
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.IndexUnPublishedLanguageEnabled):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.IndexUnPublishedLanguageEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.SolrBatchSize):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SolrBatchSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.DeleteProductBatchSize):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DeleteProductBatchSize)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.APIKey):
+            </td>
+            <td class="adminData">
+                <button type="submit" name="generateapikey" class="k-button" value="generateapikey">@T("Plugins.XcellenceIT.Solr.Core.GenerateNewAPIKey")</button>
+                @Html.DisplayFor(model => model.APIKey)
+            </td>
+        </tr>
+         <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.SavePluginConfigrationSetting):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SavePluginConfigrationSetting)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="submit" name="configure" class="k-button" value="configure">
+                    @T("Admin.Common.Save")
+                </button>
+                <button type="submit" name="stopindexing" class="k-button" id="stopindexing" value="stopindexing">@T("Plugins.XcellenceIT.Solr.Core.StopIndexing")</button>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <b>(Note : Make sure to Restart Appliation after saving configurations.)</b>
+}
+@helper TabAddProduct()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                <text>Product Id:</text>
+            </td>
+            <td class="adminData">
+                @Html.TextArea("productIds")
+                <br />
+                <b>(Product Ids must be separated by ","(comma) . for example: 123,545,787,56587)</b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button id="add-product" type="submit" class="k-button">
+                    Mark Product(s) as Pending
+                </button>
+            </td>
+        </tr>
+    </table>
+
+    var addProductsUrl = ViewBag.Url + "SolrAdmin/AddProduct";
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#add-product').click(function () {
+                var products = $('#productIds').val();            
+                var postData = {
+                    productIds: products,
+                };
+                addAntiForgeryToken(postData);
+                $.ajax({
+                    type: 'POST',
+                    url: '@(addProductsUrl)',
+                    data: postData,
+                    success: function (data) {
+                        alert(data);
+                        $('#productIds').val("");
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+}
+@helper TabDeleteProduct()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                <text>Product Id:</text>
+            </td>
+            <td class="adminData">
+                @Html.TextArea("deleteproductIds")
+                <br />
+                <b>(Product Ids must be separated by ","(comma) . for example: 123,545,787,56587)</b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button id="delete-product" type="submit" class="k-button">
+                    Mark Product(s) as Delete
+                </button>
+            </td>
+        </tr>
+    </table>
+
+    var delProductsUrl = ViewBag.Url + "SolrAdmin/DeleteProduct";
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#delete-product').click(function () {
+                var delproducts = $('#deleteproductIds').val();            
+                var postData = {
+                    productIds: delproducts,
+                };
+                addAntiForgeryToken(postData);
+                $.ajax({
+                    type: 'POST',
+                    url: '@(delProductsUrl)',
+                    data: postData,
+                    success: function (data) {
+                        alert(data);
+                        $('#deleteproductIds').val("");
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+}
+
+<div style="float: right; margin-bottom: 20px;">
+    Powered By: <a href="@Model.CompanyURL" target="_blank" style="display: inline-block; vertical-align: middle;">
+    <img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKgAAAAZCAIAAAAqv/IzAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjYyNTM2ODYzNzlCRjExRTJBQkIwODA4RkE0QjEzQzRGIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjYyNTM2ODY0NzlCRjExRTJBQkIwODA4RkE0QjEzQzRGIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NjI1MzY4NjE3OUJGMTFFMkFCQjA4MDhGQTRCMTNDNEYiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NjI1MzY4NjI3OUJGMTFFMkFCQjA4MDhGQTRCMTNDNEYiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz78kX//AAAFyklEQVR42uyaMUxkZRDHD4NyBjzgiiUW1yyWQuElJlynQqIVFBpNIEqjmEBFIdGEikSDJlSQC2hBAcmZWEB1BWvsjsQEC9DmIktxFXuJCLJ6eKf44w0Ow7wHfPfiZVd4kw3Z/Zj5dr75z39mvgc1+/v7lzK5ePJUFoIM+EwukNRWp1urq6tjY2N2paOjY3h4uOKO9ff3l8tleV9fXz81NcXPjPH/mSwuLrqVzc3NintVLBYVdaSlpeV/inqVAg/GMN4t2ohX0DH7sb29vbL+LC8vvxXJwsLCeQBejuHIVCWMtx/z+XxlUZ+YmEidglUHPMzmSLzp6+urtmrv6lClgMeNiUh01EjhybHh7mHph9LXLx9mRF3z8x/cf7Rd/P2nr35b+VxWml69+ewLb6r+3r1v/yyt7Nz5xG5y5can6NQ25k/aE6s/fv6m/OOXsnL1jVt1115T86WlJbAnheOHcdWePCBFKA92nRmws7PTMuCx1AqFgk0vdNBUNct4wk2PD7TFcGRkRA1nZ2dZmZ+fl0xCZ3R0VA7I8dfW1myGEQf26enpiU+XGhaqvQ6/IQfxwD/aOTrY33tbICqQ68ovt9/Jvf3907mX+Oh+W//i+4Il67xUjcxwO4C6W2l57y4ZICt4zM/u7u743MRJNBuImm1sHEwMlyMZHx8XzXRqxEiqTiESUCFkrs5rEENsLQZS0pSv2tTcRaa3t5edJWlEwJV9yADey1eoJ21tbeEHSSj1sNN+BLOWd+9aOiqQDnVY2/TKTUFaZPvOx/Lmr50Nl1uUBK0Hgj01QFHnbDAJ/xoaGk4q9e54xGhgYABQ7bydWm04EqsmuZJY5wNtXdJY1HUrqzM5OQnAOGw7Ogo4zLpWGkWXRSIW6EwC4y07kcYbn4GQcvEwUy43U/8t6uBt6792AXnz4F7Brl99/RZ7kg1scoT9gy2t88LL+HBn4bfHk1i4OGKbTo3wEUfXVuS9A48NU9uCB98+NDRk849EV6RlxQHMJpIibtbRxUBnknv8EcB1zcJgW/8RCoCUdJXL1w5zan/v12Pk3i4eYLy9YfcUrivSmkxCKc4GGF1dXTa4jvG2ykm+61FtvNKp6Z3CQpUYbvaRNA2xXV9fjzujpxMdS83EYVaZYGuPTnbhB/HAgzpV1/JY6rDLBl6uI2iFtyQ+2Lox7/bUrvHw/rEdaq/ktRCRlcwviVwvlUqn3KkU2tOvXqerrUbivpcOilcugkQ80NY99lFPBHgdEjk+4MV3cI0JE/cQ6bEOkgC8Y/YzuesHHXp7w9FdsiEOW2I2uDp/SPe9LZsiUlpkFj39BrK7uxuf7SWOMg8rF1lMp6bjXvzSnLhbClsdr2SS166vamApvYCLgMKpzD5pxgx0JpnxZyIni+SEtnCkpq4prild3xV/MXedQpJJ6O4eyE9PT9t5REpfLpeL84DslhlYY5FOTcopwVW60Hopwq7qym6BtvHhIP5cyCYHnV4y0hoqwCfV/0BnEoB3k53w2M3kQlk7vQu6kJjrvlXjdhfPBkZCuL678sUxF7kH/ktE1+dcjMqRkBwuGziSnWsk0wPVCKhV04TToMvAlcizdLZxIjoshbtzc3OJoUisZOHOnMF4nexcNgg7YTMvvY5vffch2Gv1BnVGd7kLuD1JJve0h33Y83b0dEVucWdWe3SYzxXCmZkZRicNhw1EiJo8ydGQUXLRsUiIS4nzVKCtnewSn7Khxrr6Nh2JU9OP7rLDl/ZEEuiMBz5ksrNXOy7uVGywp+arDihi+Nz1jxJ7BwBjBelhvHwXF3qU8U/cddctqU5xcpAfUgwBA0OFhIi4O26gGpf71tZWFOSurAwjjvlI4n+US22LcjybcYkGRw+SHToiAafBwcF4puI8i5rQtiOc6Yz90pon969XYGz5DcYgfSmT6pAn+EeaxMkuk/MPvJvs3KPfTM4n8IlPfrJwV4/UZP9enTE+kwsk/wgwAKm2AMXI9591AAAAAElFTkSuQmCC" />
+    </a>
+</div>
+
+<style>
+    .multi-store-scope .check-all {
+        display: none;
+        margin-top: 10px;
+    }
+</style>

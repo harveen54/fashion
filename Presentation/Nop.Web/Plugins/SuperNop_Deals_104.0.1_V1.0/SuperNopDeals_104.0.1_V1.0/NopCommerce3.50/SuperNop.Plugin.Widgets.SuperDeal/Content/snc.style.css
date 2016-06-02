@@ -1,0 +1,26 @@
+﻿.jcarousel-control-prev, .jcarousel-control-next {
+    color: #fff !important;
+    top: 43% !important;
+}
+
+.sncdeals-wrapper {
+    margin: 0 0 50px !important;
+}
+
+.snc-product-info {
+    text-align: left !important;
+}
+
+.sncdiscount-badge {
+    background: #90e137 none repeat scroll 0 0;
+    border-radius: 10px;
+    color: #fff;
+    float: left !important;
+    font-size: 12px;
+    height: 17px;
+    padding: 2px 5px;
+    width: auto;
+    margin: 12px 0 -1px;
+    position: absolute;
+    z-index: 111;
+}

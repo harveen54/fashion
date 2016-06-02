@@ -1,0 +1,80 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@using System.Web.Mvc.Html;
+@using Nop.Web.Framework
+@using Nop.Web.Framework.UI
+@model XcellenceIT.Plugin.Solr.Search.Models.SolrSearchProductsModel
+@{
+    
+    Layout = "~/Views/Shared/_Root.cshtml";
+    Html.AddCssFileParts("~/Plugins/XcellenceIT.Plugin.Solr.Search/Content/nopaccelerate-search-styles.css"); 
+}
+<div id="npacc-ajax-loading" class="npacc-ajax-loading-overlay"></div>
+<div id="npacc-search">
+    
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        callAjax('@HttpContext.Current.Request.Url.ToString()');
+    });
+
+    function callAjax(url,data) {
+        
+        $('#npacc-ajax-loading').show();
+
+        $.ajax({
+            url: url,
+            data:{
+                As:"@Model.As",
+                Cid:"@Model.Cid",
+                Isc:"@Model.Isc",
+                Mid:"@Model.Mid",
+                Pf:"@Model.Pf",
+                Pt:"@Model.Pt",
+                Q:"@Model.Q",
+                Sid: "@Model.Sid"                
+            }, 
+            type: 'POST',
+            success: function (result) {
+                $('#npacc-search').html(result);
+                $('#npacc-ajax-loading').hide();
+            }
+        });
+
+   
+        return false;
+
+    }
+
+</script>

@@ -1,0 +1,8 @@
+﻿Group: XcellenceIT
+FriendlyName: NopAccelerate Solr Search
+SystemName: XcellenceIT.Plugin.Solr.Search
+Version: 3.6.3
+SupportedVersions: 3.70
+Author: Xcellence-IT
+DisplayOrder: 3
+FileName: XcellenceIT.Plugin.Solr.Search.dll

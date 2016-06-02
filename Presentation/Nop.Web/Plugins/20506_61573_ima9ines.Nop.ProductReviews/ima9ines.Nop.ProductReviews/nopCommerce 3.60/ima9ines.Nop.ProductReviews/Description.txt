@@ -1,0 +1,8 @@
+﻿Group: ima9ines
+FriendlyName: ima9ines - Product Reviews - Free Edition
+SystemName: ima9ines.Nop.ProductReviews
+Version: 3.65
+SupportedVersions: 3.60
+Author: ima9ines, ima9ines.com
+DisplayOrder: 1
+FileName: ima9ines.Nop.ProductReviews.dll

@@ -1,0 +1,546 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@using XcellenceIT.Plugin.Solr.Search.Models
+@using Nop.Core.Infrastructure
+@using Nop.Core
+@model SolrSearchProductsModel
+@using Nop.Web.Models.Catalog;
+@using Nop.Web.Framework.UI
+@{
+    var timeout = ViewBag.cached;
+    var _webHelper = EngineContext.Current.Resolve<XcellenceIT.Plugin.Solr.Core.Domain.ISolrWebHelper>();
+    string categoryClearUrl = _webHelper.RemoveQueryString(_webHelper.GetThisPageUrl(true), "category").ToString();
+    string vendorClearUrl = _webHelper.RemoveQueryString(_webHelper.GetThisPageUrl(true), "vendor").ToString();
+    string ratingClearUrl = _webHelper.RemoveQueryString(_webHelper.GetThisPageUrl(true), "rating").ToString();
+    string scrollClass = string.Empty;
+    int counter = 0;
+    var webHelper = Nop.Core.Infrastructure.EngineContext.Current.Resolve<XcellenceIT.Plugin.Solr.Core.Domain.ISolrWebHelper>();
+    var currentURL = webHelper.GetThisPageUrl(true).ToString();
+    var clearURL = webHelper.RemoveQueryString(currentURL, "price");
+    var clearRatingURL = webHelper.RemoveQueryString(currentURL, "rating");
+    currentURL = webHelper.RemoveQueryString(currentURL, "pagenumber");
+}
+@if (Model.CustomProducts.Count > 0)
+{
+    if (Model.EnablePriceRangeFilter)
+    {
+        Html.AppendScriptParts("~/Scripts/kendo/2014.1.318/kendo.web.min.js");
+        
+        string encodedCollapsePriceFilterTitle = "npacc-filter-collapse-price-filter";
+        string encodedCollapsePriceFilterItem = "npacc-filter-collapse-item-price-filter";
+        string encodedPriceFilterArrowId = "npacc-filter-arrow-price-filter";
+
+        <div class="group price-range-filter-wrapper">
+            <div class="title">
+                <strong title="@T("Filtering.SpecificationFilter.collapse.title")" id="@encodedCollapsePriceFilterTitle" class="collapse" onclick="SlideUpDown('@(encodedCollapsePriceFilterItem)','@(encodedPriceFilterArrowId)');"><span id="@encodedPriceFilterArrowId" class="arrow"></span> @T("Filtering.PriceRangeFilter")</strong>
+                <a class="clearPriceRangeFilter" href="@clearURL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@clearURL'); callAjax('@clearURL','@timeout'); return false;">@T("Filtering.ClearCurrentFilter")</a>
+            </div>
+            <div id="@encodedCollapsePriceFilterItem" class="price-range-filter filter-item-group">
+                <div class="priceRangeMinMaxPanel">
+                    <span class="priceRangeMinPanel">
+                        <span>@T("Filtering.PriceRangeFilter.MinimumPrice")</span>
+                        <span class="priceRangeMinPrice">@Model.SolrPriceRangeFilterContext.CurrencySymbol @Model.SolrPriceRangeFilterContext.SolrPriceRange.From</span>
+                    </span>
+                    <span class="priceRangeMaxPanel">
+                        <span>@T("Filtering.PriceRangeFilter.MaximumPrice")</span>
+                        <span class="priceRangeMaxPrice">@Model.SolrPriceRangeFilterContext.CurrencySymbol @Model.SolrPriceRangeFilterContext.SolrPriceRange.To</span>
+                    </span>
+                </div>
+                <div id="slider-range" class="priceRangeSlider">
+                    <input />
+                    <input />
+                </div>
+                <div class="priceRangeCurrentPricesPanel">
+                    @{
+        var min = @Model.SolrPriceRangeFilterContext.SolrPriceRange.From;
+        var max = @Model.SolrPriceRangeFilterContext.SolrPriceRange.To;
+                    }
+                    <span class="currentMinPrice"></span>
+                    <span class="currentMaxPrice"></span>
+                </div>
+            </div>
+        </div>
+        <div id="minvalue" style="display:none">@Model.SolrPriceRangeFilterContext.SolrPriceRange.From.ToString().Replace(",", ".")</div>
+        <div id="maxvalue" style="display:none">@Model.SolrPriceRangeFilterContext.SolrPriceRange.To.ToString().Replace(",", ".")</div>
+        <div id="url" style="display:none">@currentURL</div>
+
+        <script type="text/javascript">
+            function rangeSliderOnSlide(e) {
+                var rentval = e.values;
+                //update span value when slider change done..
+                $("div#minvalue").text(rentval[0]);
+                $("div#maxvalue").text(rentval[1]);
+
+                //set the new min and max values below the slider to show current slider points..
+                $("span.currentMinPrice").html('@(Model.SolrPriceRangeFilterContext.CurrencySymbol) ' + rentval[0]);
+                $("span.currentMaxPrice").html('@(Model.SolrPriceRangeFilterContext.CurrencySymbol) ' + rentval[1]);
+            }
+
+            function rangeSliderOnChange(e) {
+                var rentval = e.values;
+                var currentURL = $("div#url").text();
+                var url = removeParameter(currentURL, "price");
+                var newUrl = url.replace(/&amp/g, '');
+                url = UpdateQueryString("price", rentval[0] + "-" + rentval[1], newUrl);
+
+                //update span value when slider change done..
+                localStorage.setItem("selStart", rentval[0]);
+                localStorage.setItem("selEnd", rentval[1]);
+                npAccFiltersPushStateUrl(url); //to update addressbar URL history
+                callAjax(url, '@timeout');
+            }
+
+            //keeping price range selection after ajax call..
+            function keepPriceRangeAfterRefresh() {
+                var minValue = localStorage["minValue"];
+                var maxValue = localStorage["maxValue"];
+                var selStart = $("div#minvalue").text();
+                var selEnd = $("div#maxvalue").text();
+                if ($("div#url").text().indexOf('price') > 0) {
+                    selStart = localStorage["selStart"];
+                    selEnd = localStorage["selEnd"];
+                }
+
+                //create new instance with changed values after ajax call..
+                $("#slider-range").kendoRangeSlider({
+                    change: rangeSliderOnChange,
+                    slide: rangeSliderOnSlide,
+                    min: parseInt(minValue),
+                    max: parseInt(maxValue),
+                    selectionStart: parseInt(selStart),
+                    selectionEnd: parseInt(selEnd),
+                    smallStep: 1,
+                    largeStep: 5,
+                    tickPlacement: "both"
+                });
+
+                //set the old min and max price values above slider..
+                $("span.priceRangeMinPrice").html('@(Model.SolrPriceRangeFilterContext.CurrencySymbol) ' + minValue);
+                $("span.priceRangeMaxPrice").html('@(Model.SolrPriceRangeFilterContext.CurrencySymbol) ' + maxValue);
+
+
+                //set the new min and max values below the slider to show current slider points..
+                $("span.currentMinPrice").html('@(Model.SolrPriceRangeFilterContext.CurrencySymbol) ' + selStart);
+                $("span.currentMaxPrice").html('@(Model.SolrPriceRangeFilterContext.CurrencySymbol) ' + selEnd);
+            }
+
+            $(document).ready(function () {
+                var minValue = $("#minvalue").text();
+                var maxValue = $("#maxvalue").text();
+                localStorage.setItem("minValue", minValue);
+                localStorage.setItem("maxValue", maxValue);
+                $("#slider-range").kendoRangeSlider({
+                    change: rangeSliderOnChange,
+                    slide: rangeSliderOnSlide,
+                    min: parseInt(minValue),
+                    max: parseInt(maxValue),
+                    selectionStart: parseInt(minValue),
+                    selectionEnd: parseInt(maxValue),
+                    smallStep: 1,
+                    largeStep: 5,
+                    tickPlacement: "both"
+                });
+
+                //set the new min and max values below the slider to show current slider points..
+                $("span.currentMinPrice").html('@(Model.SolrPriceRangeFilterContext.CurrencySymbol) ' + parseInt(minValue));
+                $("span.currentMaxPrice").html('@(Model.SolrPriceRangeFilterContext.CurrencySymbol) ' + parseInt(maxValue));
+            });
+        </script>
+
+    }
+}
+
+@if (Model.CategoryFilter != null)
+{
+    if (Model.CategoryFilter.Count > 0)
+    {
+
+        foreach (var m in Model.CategoryFilter)
+        {
+            if (m.Value.Count > 0)
+            {
+    <div class="group @(Model.FiterDisplayMode == true ? "dropdown-bottom" : "")">
+        @{
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                foreach (char c in m.Key.Key)
+                {
+                    if (Char.IsLetterOrDigit(c))
+                    {
+                        sb.Append(c);
+                    }
+                }
+                // all Id should be unique
+                string encodedKey = "npacc-cat-filter-search-box-" + sb;
+                string encodedCollapseTitle = "npacc-cat-filter-collapse-" + counter;
+                string encodedCollapseItem = "npacc-cat-filter-collapse-item-" + counter;
+                string encodedArrowId = "npacc-cat-filter-arrow-id-" + counter;
+                counter++;                                           
+        }
+
+        @if (Model.FiterDisplayMode)
+        {
+            if (!String.IsNullOrWhiteSpace(m.Key.Value))
+            {
+                <a href="@m.Key.Value" rel="nofollow" onclick="npAccFiltersPushStateUrl('@m.Key.Value');callAjax('@m.Key.Value','@timeout'); return false;" class="clearCurrentFilter clear-position">@T("Filtering.ClearCurrentFilter")</a>
+            }
+            <a class="collapse" onclick="SlideUpDown('@(encodedCollapseItem)','@(encodedArrowId)');">  
+            <div class="title dropdown-title">
+                <strong id="@encodedCollapseTitle"><span id="@encodedArrowId" class="arrow"></span> @m.Key.Key</strong>
+            </div>
+            </a>
+        }
+        else
+        {
+            if (!String.IsNullOrWhiteSpace(m.Key.Value))
+                {
+                    <a href="@m.Key.Value" rel="nofollow" onclick="npAccFiltersPushStateUrl('@m.Key.Value');callAjax('@m.Key.Value','@timeout'); return false;" class="clearCurrentFilter">@T("Filtering.ClearCurrentFilter")</a>
+                }
+            <a class="collapse" onclick="SlideUpDown('@(encodedCollapseItem)','@(encodedArrowId)');">
+            <div class="title">
+                <strong title="@T("Filtering.SearchFilters.collapse.title")" id="@encodedCollapseTitle"><span id="@encodedArrowId" class="arrow"></span> @T("Filtering.CategoryFilteredLabel")</strong>               
+            </div>
+            </a>
+        }
+        
+        <div id="@encodedCollapseItem" class="filter-item-group @(Model.FiterDisplayMode == true ? "dropdown-list" : "")">
+            @* if filter count is greater than 5 then it will display scroll bar *@
+            @if (m.Value.Count > Model.MaxFilterOptionsForSearchBoxInFilters)
+            {
+                {
+                    scrollClass = "scroll";
+                }
+                <div class="filter-search-box">
+                    <input type="text" class="npacc-filter-search" id="@(encodedKey)" placeholder="@(T("Filtering.placeholder.filter.search") + " " + m.Key.Key)"  />
+                </div>
+            }
+            else
+            {
+                {
+                    scrollClass = string.Empty;
+                }
+            }
+
+            <ul id="@(encodedKey + "-item")" class="@scrollClass">
+                @foreach (var option in m.Value)
+                {
+                    <li class="item">
+                        @if (option.IsChecked)
+                        {
+                            <input type="checkbox" checked="checked" onchange="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" />
+                            <a href="@option.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;">
+                                <span original="@(option.OptionName + " (" + option.FacetCount + ")")">
+                                    @option.OptionName
+                                <text>(</text>@option.FacetCount<text>)</text>
+                            </span>
+                        </a>
+                        }
+                        else
+                        {
+                            if (option.FacetCount > 0)
+                            {
+                                <input type="checkbox" onchange="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" />
+                                <a href="@option.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;">
+                                    <span original="@(option.OptionName + " (" + option.FacetCount + ")")">
+                                        @option.OptionName
+                                    <text>(</text>@option.FacetCount<text>)</text>
+                                </span>
+                            </a>
+                            }
+                            else
+                            {
+                                <input type="checkbox" onchange="npAccFiltersPushStateUrl('@option.URL'); callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" disabled="disabled" />
+                            <a class="disabled"><span original="@(option.OptionName + " (" + option.FacetCount + ")")">@option.OptionName
+                                <text>(</text>@option.FacetCount<text>)</text>
+                            </span></a>
+                            }
+                        }
+                    </li>                                                          
+                }
+            </ul>
+        </div>
+    </div>
+            }
+        }
+
+    }
+}
+
+
+@*Vendor Filter*@
+
+@if (Model.VendorFilter != null)
+{
+    if (Model.VendorFilter.Count > 0)
+    {
+
+        foreach (var m in Model.VendorFilter)
+        {
+            if (m.Value.Count > 0)
+            {
+                <div class="group @(Model.FiterDisplayMode == true ? "dropdown-bottom" : "")">
+                    @{
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                foreach (char c in m.Key.Key)
+                {
+                    if (Char.IsLetterOrDigit(c))
+                    {
+                        sb.Append(c);
+                    }
+                }
+                // all Id should be unique
+                string encodedKey = "npacc-cat-filter-search-box-" + sb;
+                string encodedCollapseTitle = "npacc-cat-filter-collapse-" + counter;
+                string encodedCollapseItem = "npacc-cat-filter-collapse-item-" + counter;
+                string encodedArrowId = "npacc-cat-filter-arrow-id-" + counter;
+                counter++;
+                    }
+
+                    @if (Model.FiterDisplayMode)
+                    {
+                        if (!String.IsNullOrWhiteSpace(m.Key.Value))
+                        {
+                            <a href="@m.Key.Value" rel="nofollow" onclick="npAccFiltersPushStateUrl('@m.Key.Value');callAjax('@m.Key.Value','@timeout'); return false;" class="clearCurrentFilter clear-position">@T("Filtering.ClearCurrentFilter")</a>
+                        }
+                        <a class="collapse" onclick="SlideUpDown('@(encodedCollapseItem)','@(encodedArrowId)');">  
+                        <div class="title dropdown-title">
+                            <strong id="@encodedCollapseTitle"><span id="@encodedArrowId" class="arrow"></span> @m.Key.Key</strong>
+                        </div>
+                        </a>
+                    }
+                    else
+                    {
+                        if (!String.IsNullOrWhiteSpace(m.Key.Value))
+                            {
+                                <a href="@m.Key.Value" rel="nofollow" onclick="npAccFiltersPushStateUrl('@m.Key.Value');callAjax('@m.Key.Value','@timeout'); return false;" class="clearCurrentFilter">@T("Filtering.ClearCurrentFilter")</a>
+                            }
+                        <a class="collapse" onclick="SlideUpDown('@(encodedCollapseItem)','@(encodedArrowId)');">  
+                        <div class="title">
+                            <strong title="@T("Filtering.SearchFilters.collapse.title")" id="@encodedCollapseTitle"><span id="@encodedArrowId" class="arrow"></span> @m.Key.Key</strong>
+                        </div>
+                        </a>
+                    }
+                    
+                    <div id="@encodedCollapseItem" class="filter-item-group @(Model.FiterDisplayMode == true ? "dropdown-list" : "")">
+                        @* if filter count is greater than 5 then it will display scroll bar *@
+                        @if (m.Value.Count > Model.MaxFilterOptionsForSearchBoxInFilters)
+                        {
+                            {
+                                scrollClass = "scroll";
+                            }
+                            <div class="filter-search-box">
+                                <input type="text" class="npacc-filter-search" id="@(encodedKey)" placeholder="@(T("Filtering.placeholder.filter.search") + " " + m.Key.Key)" />
+                            </div>
+                        }
+                        else
+                        {
+                            {
+                                scrollClass = string.Empty;
+                            }
+                        }
+
+                        <ul id="@(encodedKey + "-item")" class="@scrollClass">
+                            @foreach (var option in m.Value)
+                            {
+                                <li class="item">
+                                    @if (option.IsChecked)
+                                    {
+                                        <input type="checkbox" checked="checked" onchange="npAccFiltersPushStateUrl('@option.URL'); callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" />
+                                        <a href="@option.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;">
+                                            <span original="@(option.OptionName + " (" + option.FacetCount + ")")">
+                                                @option.OptionName
+                                                <text>(</text>@option.FacetCount<text>)</text>
+                                            </span>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        if (option.FacetCount > 0)
+                                        {
+                                            <input type="checkbox" onchange="npAccFiltersPushStateUrl('@option.URL'); callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" />
+                                            <a href="@option.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;">
+                                                <span original="@(option.OptionName + " (" + option.FacetCount + ")")">
+                                                    @option.OptionName
+                                                    <text>(</text>@option.FacetCount<text>)</text>
+                                                </span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" onchange="npAccFiltersPushStateUrl('@option.URL'); callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" disabled="disabled" />
+                                            <a class="disabled">
+                                                <span original="@(option.OptionName + " (" + option.FacetCount + ")")">
+                                                    @option.OptionName
+                                                    <text>(</text>@option.FacetCount<text>)</text>
+                                                </span>
+                                            </a>
+                                        }
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+        }
+
+    }
+}
+
+
+@* Rating Range Filter *@
+@if (Model.ShowRatingFilter)
+{
+    if (Model.CustomProducts.Count > 0)
+    {
+        if (Model.RatingFilter.Count > 0)
+        {
+            <div class="group @(Model.FiterDisplayMode == true ? "dropdown-bottom" : "")">
+                @{
+            // all Id should be unique
+            string encodedRatingCollapseTitle = "npacc-filter-collapse-rating-filter";
+            string encodedRatingCollapseItem = "npacc-filter-collapse-item-rating-filter";
+            string encodedRatingArrowId = "npacc-filter-arrow-rating-filter";
+                }
+
+                @if (Model.FiterDisplayMode)
+                {                 
+                     if (System.Web.HttpContext.Current.Request.QueryString["rating"] != null)
+                     {
+                         <a href="@ratingClearUrl" rel="nofollow" onclick="npAccFiltersPushStateUrl('@ratingClearUrl');callAjax('@ratingClearUrl','@timeout'); return false;" class="clearCurrentFilter clear-position">@T("Filtering.ClearCurrentFilter")</a>
+                     }    
+                    <a class="collapse" onclick="SlideUpDown('@(encodedRatingCollapseItem)','@(encodedRatingArrowId)');">                
+                    <div class="title dropdown-title">
+                        <strong id="@encodedRatingCollapseTitle"><span id="@encodedRatingArrowId" class="arrow"></span> Rating </strong>                        
+                    </div>
+                    </a>
+                }
+                else
+                {
+                    if (System.Web.HttpContext.Current.Request.QueryString["rating"] != null)
+                        {
+                            <a href="@ratingClearUrl" rel="nofollow" onclick="npAccFiltersPushStateUrl('@ratingClearUrl');callAjax('@ratingClearUrl','@timeout'); return false;" class="clearCurrentFilter">@T("Filtering.ClearCurrentFilter")</a>
+                        }   
+                    <a class="collapse" onclick="SlideUpDown('@(encodedRatingCollapseItem)','@(encodedRatingArrowId)');">                
+                    <div class="title">
+                        <strong title="@T("Filtering.SpecificationFilter.collapse.title")" id="@encodedRatingCollapseTitle">
+                        <span id="@encodedRatingArrowId" class="arrow"></span> Rating </strong>
+                        
+                    </div>
+                    </a>
+                }
+                
+                <div id="@encodedRatingCollapseItem" class="filter-item-group @(Model.FiterDisplayMode == true ? "dropdown-list" : "")">
+                    @foreach (var item in Model.RatingFilter)
+                    {
+                        @*<ul class="@scrollClass">*@
+                        <ul>
+                            <li class="item">
+                                @if (item.IsChecked)
+                                {
+                                    if (item.FacetCount > 0)
+                                    {
+                                        int ratingPercent = 0;
+
+                                        if (item.OptionName.Contains("4"))
+                                        {
+                                            ratingPercent = 80;
+                                        }
+                                        if (item.OptionName.Contains("3"))
+                                        {
+                                            ratingPercent = 60;
+                                        }
+                                        if (item.OptionName.Contains("2"))
+                                        {
+                                            ratingPercent = 40;
+                                        }
+                                        if (item.OptionName.Contains("1"))
+                                        {
+                                            ratingPercent = 20;
+                                        }
+                                        <input type="checkbox" checked="checked" onchange="npAccFiltersPushStateUrl('@item.URL');callAjax('@item.URL','@timeout'); return false;" value="@Html.Raw(@item.FacetCount)" />
+                                         <a class="rating-anchor" href="@item.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@item.URL');callAjax('@item.URL','@timeout'); return false;">
+                                         <div class="product-rating-box" title="@item.OptionName">
+                                             <div class="rating">
+                                                <div id="ratingpercentage" style="width: @(ratingPercent)%"></div>
+                                             </div>  
+                                            <div> & Up (@item.FacetCount)</div>                                                  
+                                         </div>
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    int ratingPercent = 0;
+                                    if (item.FacetCount > 0)
+                                    {
+                                        if (item.OptionName.Contains("4"))
+                                        {
+                                            ratingPercent = 80;
+                                        }
+                                        if (item.OptionName.Contains("3"))
+                                        {
+                                            ratingPercent = 60;
+                                        }
+                                        if (item.OptionName.Contains("2"))
+                                        {
+                                            ratingPercent = 40;
+                                        }
+                                        if (item.OptionName.Contains("1"))
+                                        {
+                                            ratingPercent = 20;
+                                        }
+
+                                        <input type="checkbox" onchange="npAccFiltersPushStateUrl('@item.URL');callAjax('@item.URL','@timeout'); return false;" value="@Html.Raw(@item.FacetCount)" />
+
+                                            <a class="rating-anchor" href="@item.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@item.URL');callAjax('@item.URL','@timeout'); return false;"> 
+                                            <div class="product-rating-box" title="@item.OptionName">
+                                                 <div class="rating">
+                                                    <div id="ratingpercentage" style="width: @(ratingPercent)%"></div>
+                                                 </div>  
+                                                <div>& Up (@item.FacetCount)</div>                                                  
+                                             </div>     
+                                            </a>
+                                    }
+                                }
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        }
+    }
+}
+
+
+

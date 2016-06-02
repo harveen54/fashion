@@ -1,0 +1,254 @@
+﻿@model SearchBoxModel
+@using Nop.Core.Infrastructure
+@using Nop.Web.Models.Catalog;
+@using Nop.Services.Catalog
+@using XcellenceIT.Plugin.Solr.Search.Services
+@using System.Web
+@using Nop.Services.Seo
+@using Nop.Services.Configuration
+@using XcellenceIT.Plugin.Solr.Search.Domain
+@using XcellenceIT.Plugin.Solr.Search
+<style>
+    .auto-term-suggestion > span {
+        background: #fff none repeat scroll 0 0;
+        color: #777;
+        font-weight: bold;
+        left: 30px;
+        position: absolute;
+        top: 5px;
+        padding: 0 5px;
+    }
+
+    .auto-term-suggestion {
+        position: relative;
+        border-bottom: 1px solid #ddd;
+        padding: 7px 0px;
+    }
+
+    .highlight-category {
+        color: #ca6307;
+    }
+
+    .search-box #categories {
+        float: left;
+        height: 40px;
+        width: 140px;
+        padding: 6px;
+    }
+
+    .categories-wrapper {
+        float: left;
+        margin-right: -1px;
+    }
+    .npacc-auto-heavy {
+        font-weight: 700;
+    }
+
+    @@media only screen and (max-device-width:1000px) { /* Change to whatever media query you require */
+        .search-box #categories {
+            height: 36px;
+        }
+    }
+
+    @@media all and (max-width:640px) {
+        .search-box #categories {
+            width: 100px;
+        }
+
+        .search-box input.search-box-text {
+            width: 180px;
+        }
+    }
+
+    @@media all and (max-width:480px) {
+        .search-box #categories {
+            width: 80px;
+        }
+
+        .header .search-box input.search-box-text {
+            width: 140px !important;
+        }
+    }
+</style>
+@{
+    var searchTooltip = T("Search.SearchBox.Tooltip");
+    int slug = 0;
+    var parentcategoryId = 0;
+    int cid = 0;
+    int storeScope = StoreScope.storeScope;
+    var _pluginSettings = EngineContext.Current.Resolve<ISettingService>().LoadSetting<XcellenceITSolrSearchPluginSettings>(storeScope);
+    bool CheckedDropdownenable = false;
+    if (_pluginSettings.EnableSolrSearch && _pluginSettings.EnableCategoriesDropdown)
+    { CheckedDropdownenable = true; }
+    if (!CheckedDropdownenable)
+    {
+        goto end;
+    }
+    var url = HttpContext.Current.Request.Url.AbsoluteUri;
+    cid = Convert.ToInt32(HttpUtility.ParseQueryString(url).Get("cid"));
+    parentcategoryId = EngineContext.Current.Resolve<ISolrSearchService>().GetPrarentCategoryByCategoryId(cid);
+    string AbsolutePath = (HttpContext.Current.Request.Url.AbsolutePath);
+    AbsolutePath = AbsolutePath.Substring(1, AbsolutePath.Length - 1);
+    var getSlugrecord = EngineContext.Current.Resolve<IUrlRecordService>().GetBySlug(AbsolutePath);
+    if (getSlugrecord != null)
+    {
+        slug = EngineContext.Current.Resolve<ISolrSearchService>().GetCategoryIdbySename(AbsolutePath);
+
+    }
+end:
+}
+@using (Html.BeginForm())
+{
+    if (CheckedDropdownenable)
+    {
+        <div class="categories-wrapper">
+            <select id="categories">
+                <script type="text/javascript">
+                    $(document).ready(function() {
+
+                        if(@slug == 0){
+                            if(@parentcategoryId == 0){
+                                document.getElementById('categories').value=@cid;
+                            }
+                            else{
+                                document.getElementById('categories').value=@parentcategoryId;
+                            }
+                        }
+                        if(@slug > 0){
+                            document.getElementById('categories').value=@slug;
+                        }
+                    });
+                </script>
+
+                <option value='0'>All</option>
+                @foreach (string subString2 in EngineContext.Current.Resolve<ISolrSearchService>().GetAllParentCategory().Split('|'))
+                {
+                    string[] category = subString2.Split(',');
+                    <option value="@category[0]">@category[1]</option>//category[0]==>categoryId,category[1]==>categoryName
+                }
+            </select>
+        </div>     
+    }
+    <input type="text" class="search-box-text" id="small-searchterms" autocomplete="off" name="q" placeholder="@T("Search.SearchBox.Tooltip")" />
+
+    <input type="submit" id="serch-button" class="button-1 search-box-button" value="@T("Search.Button")" />
+    if (Model.SearchTermMinimumLength > 0)
+    {
+        <script type="text/javascript">
+
+            $(document).ready(function() {
+                $("#serch-button").click(function (event) {
+                    var checkenabledropdown=@CheckedDropdownenable.ToString().ToLower();
+                    var categoryId= $( "#categories" ).val();
+                    var categoryText= $("#categories :selected").text();
+                    var search_terms = $("#small-searchterms");
+                    if(checkenabledropdown){
+                        if(categoryId == 0 && (search_terms.val() == "" || search_terms.val() == "@searchTooltip")){
+                            window.location.href="@Url.RouteUrl("HomePage")";
+                        }
+                        else if (categoryId > 0 && (search_terms.val() == "" || search_terms.val() == "@searchTooltip")){
+                            //Get seName of selected category
+                            $.ajax({
+                                type: "POST",
+                                url: '/SolrSearch/GetSlugByCategoryName',
+                                async: false,
+                                data: {categoryName:categoryText},
+                                success: function(data) {
+                                    if(data==null)
+                                        window.location.href="@Url.RouteUrl("HomePage")";
+                                    //goto selected categoryPage
+                                    window.location.href="/"+data;
+                                }
+                            });
+
+                        }
+                        else if (categoryId == 0 && (search_terms.val() != "" || search_terms.val() != "@searchTooltip")){
+                            window.location.href = "@Url.RouteUrl("HomePage")" + "search?cid=0&q=" + encodeURIComponent(search_terms.val());
+                        }
+                        else if (categoryId > 0 && (search_terms.val() != "" || search_terms.val() != "@searchTooltip")){
+                            window.location.href = "@Url.RouteUrl("HomePage")" + "search?As=true&Isc=true&cid=" + categoryId + "&q=" + encodeURIComponent(search_terms.val());
+                        }
+
+                    }
+                    else{
+
+                        if (search_terms.val() == "" || search_terms.val() == "@searchTooltip") {
+                            alert('@Html.Raw(HttpUtility.JavaScriptStringEncode(T("Search.EnterSearchTerms").Text))');
+                            search_terms.focus();
+                            return false;
+                        }
+
+                        window.location.href = "@Url.RouteUrl("HomePage")" + "search?cid=0&q=" + encodeURIComponent(search_terms.val());
+                    }
+
+                    event.preventDefault();
+
+                });
+
+            });
+        </script>
+    }
+    if (Model.AutoCompleteEnabled)
+    {
+        <text>
+            <script type="text/javascript">
+                var checkenabledropdown=@CheckedDropdownenable.ToString().ToLower();
+                $(document).ready(function() {
+                    $('#small-searchterms').autocomplete({
+                        delay: 500,
+                        minLength: @(Model.SearchTermMinimumLength.ToString()),
+                        source: function(request, response) {
+                            $.ajax({
+                                url: '@(Url.RouteUrl("ProductSearchAutoComplete"))',
+                                dataType: "json",
+                                data: {
+                                    term: request.term,
+                                    catId:checkenabledropdown? $( "#categories" ).val():0
+                                },
+                                success: function(data) {
+                                    response(data);
+                                }
+                            });
+                        },
+                        appendTo: '.search-box',
+                        select: function(event, ui) {
+                            $("#small-searchterms").val(ui.item.label);
+                            setLocation(ui.item.producturl);
+                            return false;
+                        }
+                    })
+                        .data("ui-autocomplete")._renderItem = function(ul, item) {
+                            var t = item.label;
+                            if(item.productpictureurl!="termSearch"){
+                                if(item.productpictureurl=="termLine"){
+                                    t = htmlEncode(t);
+                                    return $("<div class='auto-term-suggestion'><span>Top Products</span></div>")
+                                    .appendTo(ul);
+                                }
+                                else{
+                                    //html encode
+                                    t = htmlEncode(t);
+                                    return $("<li></li>")
+                                        .data("item.autocomplete", item)
+                                        .append("<a>@(Model.ShowProductImagesInSearchAutoComplete ? Html.Raw("<img src='\" + item.productpictureurl + \"'>") : null)" + t + "</a>")
+                                    .appendTo(ul);
+                                }
+                            }
+                            else  if(item.productpictureurl=="termSearch"){
+                                //html encode
+                                t = htmlEncode(t);
+                                term=$("#small-searchterms").val().toLowerCase();
+                                var re = new RegExp(term,"gi");
+                                t= t.replace(re, "<span class='npacc-auto-heavy'>"+term+"</span>");   
+                                return $("<li></li>")
+                                    .data("item.autocomplete", item)
+                                    .append("<a>" + t + "<span class='highlight-category'>"+item.categoryName+"</span></a>")
+                            .appendTo(ul);
+                            }
+                        };
+                });
+            </script>
+        </text>
+    }
+    
+}

@@ -1,0 +1,8 @@
+﻿Group: ExternalAuth methods
+FriendlyName: Twitter
+SystemName: ExternalAuth.Twitter
+Version: 1.20
+SupportedVersions: 3.70
+Author: nop4you.com
+DisplayOrder: 10
+FileName: Nop.Plugin.ExternalAuth.Twitter.dll

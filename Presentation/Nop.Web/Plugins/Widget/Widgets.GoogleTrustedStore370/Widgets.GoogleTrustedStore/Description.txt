@@ -1,0 +1,8 @@
+﻿Group: Widgets
+FriendlyName: Google Trusted Store
+SystemName: Widgets.GoogleTrustedStore
+Version: 1.06
+SupportedVersions: 3.70
+Author: nop4you.com
+DisplayOrder: 1
+FileName: Nop.Plugin.Widgets.GoogleTrustedStore.dll

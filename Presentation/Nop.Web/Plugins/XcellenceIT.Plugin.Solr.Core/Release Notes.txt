@@ -1,0 +1,549 @@
+﻿Release Date: May 10, 2016
+nopAccelerate Version: 3.6.3
+
+Bug Fixes:
+Fixed Issue. Error handling with trying to access non existing Solr log entry.
+Fixed Issue. Price range filter does not work with responsive page layout on Search Results Page.
+Fixed Issue. Wrong specification filter options on Manufacturer Page.
+Fixed Issue. Pagination issue with state-aware URL when infinite scrolling is disabled.
+Fixed Issue. Do not include search terms in term suggestion for which there is no result.
+
+New Features:
+Tracking clicks on search results page against the search term.
+Enhanced search relevancy with 'sound-alikes'.
+Added option that allows to save plugin configuration settings while uninstall plugin.
+Added setting for how many term suggestion customer wants to display in autocomplete suggestions.
+Redirect to Category page if Search Term is entered and category is selected.
+Make search term bold in autocomplete term suggestions.
+Added SQL Indexing to nopAccelerate Search term log table.
+
+-----------------------------------------------------------------------------------------------------
+Release Date: April 29, 2016
+nopAccelerate Version: 3.6.2
+
+Bug Fixes:
+ Fixed Issue: Product details throws an error when product not map with any category.
+-----------------------------------------------------------------------------------------------------
+Release Date: April 23, 2016
+nopAccelerate Version: 3.6.1
+
+Bug Fixes:
+ Fixed Issue: Search within category and manufacturer now search as per relevance.
+ Fixed Issue: Buy button & Wishlist button does not work properly with enabled setting Customer Enter Price.
+ Fixed Issue: Price range Slider currency symbol issue has been fixed.
+ Fixed Issue: Category filter does not display searchbox on Manufacturer page.
+ Fixed Issue: Collapse arrow does not work properly of Stock Availability filter 
+ 
+ New Feature:
+ 
+ Added feature Predective searchterm suggestion as per term popularity.
+ Added Price Range Slider on Search page.
+ Added DLL file version information into DLL signature properties of plugin.
+ Added Primary search with category selection.
+ Support added for Extend nopAccelerate plugin with latest version.
+ Added filter for ProductId on ProductStatus page of nopAccelerate Core Plugin.
+ Added delete functionality of Solr Logs.
+ Integrate DisplayPrice permission.
+ 
+ Enhancement:
+ 
+ ProductStatus page and Solr Log page enhancement.
+-----------------------------------------------------------------------------------------------------
+Release Date: March 31, 2016
+nopAccelerate Version: 3.6
+
+Bug Fixes:
+
+Fixed issue: Specification attributes filters were not displayed as per their display order
+Fixed Issue: Stop Indexing does not work when IDI is Deleting products
+Fixed issue: Spell correction of stored procedure name: SpecificationAttributeOptionFilter_ByCatId
+
+New Features:
+
+Notification feature for a newer release of plugin
+Attribute filters are now availble on parent category page only if you have enabled catelog setting: Include products from subcategories
+Search Auto Complete is now powered from Solr
+Added Feature Search within Category 
+Added Feature Search within Manufacturer
+Narrow or broad your search result using AND/Or and Minimum Should Match options
+-----------------------------------------------------------------------------------------------------
+nopAccelerate Version: 3.5.3
+
+Release Date: March 14, 2016
+
+Enhancement
+
+    Support added for “DisplayTaxShippingInfo”, “DisableWishlistButton” and “DisableAddToCompareListButton” on product list
+    Added feature to stop indexing process forcefully from admin panel
+
+Bug Fixes:
+
+    Fixed Issue. Fixed caching issue when using discount per customer role
+    Fixed Issue. Do not create new Schedule Task if it is already exist.
+    Fixed Issue. Fixed plugin installation error if stored procedure already exists
+    Fixed Issue. Prevent new instance of indexing process if one is already running
+    Fixed Issue. Error Handling for Indexing process when corrupted picture thumb is found. Now it will not kill indexing process.
+    Fixed Issue. Display correct price after discount is applied, when using special prices
+    Fixed Issue. Unable to search the multi diacritic character word in Name field
+    Fixed Issue. Subcategory caching won’t work with multi-store and multi-language previously
+    Fixed Issue. Pagination not working with Advance Search
+--------------------------------------------------------------------------------------
+nopAccelerate Version: 3.5.2
+
+Release Date: January 11, 2016
+
+Added nopAccelerate license note to all plugins’ pages
+------------------------------------------------------------------------------------
+nopAccelerate Version: 3.5.1
+
+Release Date: January 5, 2016
+
+Bug Fixes:
+
+    Fixed Issue. Shows same result on Categorypage with and without applying any filter
+-------------------------------------------------------------------------------------
+Release Date: January 4, 2016
+nopAccelerate Version: 3.5
+
+New Feature:
+
+Support added for nopCommerce 3.70
+
+------------------------------------------------------------------------------------------
+Release Date: December 21, 2015
+nopAccelerate Version: 3.4.1
+
+Bug Fixes
+
+Fixed Issue.	Now plugin will find view templates in Theme folder first and then in plugin's folder.
+Fixed Issue.	SolrCustomProduct has a misspelled property TotalVaraiants which is now TotalVariants.
+Fixed Issue.	Display order of plugins are now changed.
+Fixed Issue.	If old price is not configured then it displays 0 for old price	
+Fixed Issue.	Special prices are displayed only if start & end dates are configured for any product
+Fixed Issue.	Unable to search with and without diactric word after added encoding.
+
+Refactoring
+Default value of boosting are set for Search Term Setting in Search plugin
+
+------------------------------------------------------------------------------------------------------
+
+Release Date: December 9, 2015
+nopAccelerate Version: 3.4
+
+Bug Fixes
+
+Fixed issue. Unable to search with keywords having special character as well as diatrics.
+Fixed issue. Unable to open Vendor page in case of Extend nopAccelerate plugin is installed 
+Fixed issue. "An item with the same key has already been added" in case of Extend nopAccelerate plugin is installed 
+Fixed issue. Unable to open view pages after we moved view templates into plugins in case of Extend nopAccelerate plugin is installed
+Fixed issue. Search result does not display filters in case of Extend nopAccelerate plugin is installed.
+Fixed issue. Doesn't load Specification filter with option value same as Category Name.
+
+
+New Features
+
+Make Filters Responsive to support mobile devices
+Offer Color Squares for Filtering of "Color" product attribute
+Added Sorting order as per Popularity(To use Popularity Rating, it is required to have Solr to be hosted on same server where nopCommerce application is hosted.)
+Added Sorting as per Rating
+Support Specification attribute filter if attribute has same name as Category name.
+
+------------------------------------------------------------------------------------
+
+Release Date: October 23, 2015
+nopAccelerate Version: 3.3.2
+
+Bug Fixes:
+Fixed issue. Search into Product Short Descrition was not working when Search in Full Description is disabled.
+Fixed issue. Set default value 10 minutes for Ajax Caching Expiration Time in nopAccelerate Search plugin 
+ 
+------------------------------------------------------------------------------------
+Release Date: October 17, 2015
+nopAccelerate Version: 3.3.1
+
+Bug Fixes:
+
+Fixed issue. Error: “keepPriceRangeAfterRefresh is not defined” when Price Range Slider filter is disable
+Fixed issue. Error: “Input string is not with correct format” when Price Range Slider filter is disable
+
+-----------------------------------------------------------------------------------
+Release Date: October 13, 2015
+nopAccelerate Version: 3.3	
+
+Bug Fixes
+
+Fixed issue. SearchBox in filters not displayed properly		
+
+New Features
+
+Performance Optimization. Added Caching of Ajax Response
+Performance Optimization. Added Caching on Solr request
+Added SubCategory filter on Category page.
+Added Rating filter on CategoryPage, SearchPage & ManufacturePage			
+Register Generic Url RouteProvider form a plugin
+Moved View templates into plugins
+SubCategory grid is displayed by default when plugin is installed
+Support added for Solr v5.3.1
+
+-------------------------------------------------------------------------------------
+
+Release Date: September 8, 2015
+nopAccelerate Version: 3.2.2
+
+Bug Fixes
+
+Fixed issue. After applying filter, page URL does not contain language SEO code.
+Fixed issue. Added "Clear" link for StockAvailability filter.
+Fixed issue. Price Range filter disappeared or break after sliding.
+Fixed issue. Pagination does not work properly when we disable infinite scrolling.
+Fixed issue. Displays HTML code for Currency symbol other than dollar in Price-Range slider.
+Fixed issue. Filtering by store doesn't work on SolrLog Grid.
+Fixed issue. Plugin doesn't support virtual directory.
+Fixed issue. "ClearAll" link should display if any filter is applied.
+Fixed issue. StockAvailability filter doesn't generate removable tag for "IncludeOutOfStock".
+Fixed issue. Price-Range filter minimum & maximum value doesn't changed according to currency. 
+
+-------------------------------------------------------------------------------------
+
+Release Date: July 10, 2015
+nopAccelerate Version: 3.2.1
+
+Bug Fixes
+
+Fixed issue. "Error: Timeout expired. The timeout period elapsed prior to completion of the operation or the server is not responding."
+
+-------------------------------------------------------------------------------------
+
+Release Date: June 23, 2015
+nopAccelerate Version: 3.2
+
+Support added for nopCommerce version 3.60
+
+-------------------------------------------------------------------------------------
+
+Release Date: June 16, 2015
+nopAccelerate Version: 3.1.1
+
+Bug Fixes
+
+Fixed issue. "Error: Value cannot be null. Parameter name: source in Search Plugin."
+
+-------------------------------------------------------------------------------------
+
+Release Date: June 3, 2015
+nopAccelerate Version: 3.1
+
+Bug Fixes
+
+Fixed issue. Products were not indexed using schedule task “Solr IDI Process”, only for version 3.0.1
+Fixed issue. “Error: An item with the same key has already been added” while indexing product
+Fixed issue. Specification attribute filters does not load properly as per language selection
+Fixed issue. "SeName" is not indexed as per different languages.
+Fixed issue. Gives "0 products found" if Solr core is not configured for any specific Store or Language
+Fixed issue. If application is not connected with Solr then unable to load grid of configuration tab
+Fixed issue. Price range filter should display & keep original price range after applying filter
+Fixed issue. Indexing Console was indexing wrong price sometimes
+
+New Features
+
+Enhanced Search. You can now search products using Product Tags
+Product prices can be displayed after applying discount (configurable)
+Added an option to offer filters using a dropdown (configurable)
+Display Applied Filter tags with an option to remove it
+Allows to indexing for unpublished languages using scheduled tasks
+Manufacturer Part Number field is now index to Solr 
+
+Minor Fixes
+Fixed repeated Inline JavaScripts on the category, manufacturer and products tags pages
+----------------------------------------------------------------------------------
+Release Date: April 28, 2015
+nopAccelerate Version: 3.0
+
+Bug Fixes
+
+Fixed issue. Unpublished products incorrectly indexed after a change to a ProductCategory.
+Fixed issue. Feature Products does not support SKU, Short & Full Description etc. fields.
+
+New Features
+
+Added support for multiple languages with single store.
+Added support for Solr 5.0
+
+----------------------------------------------------------------------
+
+Release Date: April 8, 2015
+nopAccelerate version: 2.7.3
+
+Fixed issue. Pagination not loading on Search Result Page.
+
+----------------------------------------------------------------------
+
+Release Date: March 13, 2015
+nopAccelerate Version: 2.7.2
+
+Support added for nopAccelerate Search(Free) Plugin.
+
+------------------------------------------------------------------------
+
+Release Date: January 16, 2015
+nopAccelerate Version: 2.7.1
+
+Bug Fixes
+
+Fixed issue. Ajax loading image does not support while CSS bundling.
+Fixed issue. Deleted manufacturers and categories are indexed to Solr.
+Fixed issue. Price range filter broke in case of Infinite Scrolling is enabled.
+Fixed issue. State Aware URLs posts call back.
+Fixed issue. Special character does not support in filter value on search page.
+
+------------------------------------------------------------------------------
+
+Release Date: December 17, 2014
+nopAccelerate Version: 2.7
+
+Support added for nopCommerce version 3.50
+
+-------------------------------------------------------------------------
+
+Release Date: December 4, 2014
+nopAccelerate Version: 2.6.2
+
+Bug Fixes
+
+Fixed issue. Spell check feature is not working on search page for nopCommerce 3.40
+Fixed issue. Filters does not load on search page when using virtual directory for application
+Fixed issue. Message was not displayed after saving plugin configuration
+
+New Features
+
+Enhanced Search - Diacritics character are now supported in search terms
+Enhanced Search - You can now select default search operator (AND / OR) for search query
+Enhanced Search - You can now define Minimum Should Match criteria for search result - << http://lucene.apache.org/solr/4_10_0/solr-core/org/apache/solr/util/doc-files/min-should-match.html >>
+Added Infinite Srolling for all Catalog Pages (Manufacturer, Category, Tags and Search Result Page)
+Added support for State aware URLs using HTML5 History State API, so filtering now supports deep bookmarking and the browser’s back button
+
+--------------------------------------------------------------------------
+
+Release Date: October 1, 2014
+nopAccelerate Version: 2.6.1
+
+Bug Fixes
+
+Fixed issue. Cannot save or save and continue products at admin panel
+Fixed issue. Filters does not load properly after upgrading to Nop 3.4
+Fixed issue. Added Relevancy score option for Searching products according to In-Stock
+Fixed issue. ManagePlugin access control now works for nopAccelerate and CDN plugins
+Fixed issue. Use localized value for specification filter value
+Fixed issue. Changes message in dialog box displayed after Indexing is started
+Fixed issue. 0-product found when select page size option with any filter selected
+Fixed issue. StockAvailability filter is not working properly with other filters
+Fixed issue. Price Range Filter on Manufacturer Page doesn't offer count of products found.
+Fixed issue. Clear text on Price Slider should match styles of Clear text of other filters
+Fixed issue. If picture is new then Indexing Console applicaion throws an error
+
+New Feature
+
+Added Filters on manufacturer page.
+Added Vendor filter on search result page.
+
+----------------------------------------------------------------------------
+
+Release Date: August 8, 2014
+nopAccelerate Version: 2.6
+
+Support added for nopCommerce version 3.40
+
+-----------------------------------------------------------------------------
+
+Release Date: July 19, 2014
+nopAccelerate Version: 2.5.2 
+
+Bug Fixes
+
+Fixed issue. Arrow image does not load in filter box if CSS bundling is set to true.
+Fixed issue: Not supported EntityName for UrlRecord: Topic
+Fixed Issue. Price Range Filter causing javascript error when used with currency that is using comma "," as decimal symbol like Russian Language in Nopcommerce 3.30
+
+New Feature
+
+Performance. Search page takes more time to load when there are lot of categories. Added Caching.
+Performance. SQL Indexing added to Incremental_Solr_Product table.
+Default language per Solr Core can now be selected in Plugin Configuration, if there are more than one language available.
+Added Stock Availability filter on manufacturer page.
+Indexed protocol-independent image URLs to Solr, this removes need to re-index when SSL setting is changed.
+Group product is now searchable using their associated product's SKU.
+Separated Category navigation method for Search Plugin, this is useful if you're using only Search Plugin
+Now Indexing Console application generates pictures during indexing
+
+Refactoring
+
+IpAddress field have nvarchar(200) datatype now in SolrLog table
+Set default value 6 for maximum filter option after which search box is displayed for filters
+
+-----------------------------------------------------------------------------------
+Release Date: May 19, 2014
+nopAccelerate Version: 2.5.1
+
+Bug Fixes
+
+Fixed Issue. Schedule Task for IDI method now works in nopCommerce version 3.30
+
+---------------------------------------------------------------------------------
+
+
+Release Date: May 5, 2014
+nopAccelerate Version: 2.5
+
+Bug Fixes
+
+Fixed issue. Added resource string for Category and Manufacturer filter name on search page
+Fixed Issue. Price Range Filter causing javascript error when used with currency that is using comma "," as decimal symbol like Russian Language
+Fixed Issue. Stock Availability filter should not display if 0 products found in result
+Fixed Issue. Unpublished product is indexed to Solr for newly added store
+
+New Feature
+
+Support added for nopCommerce 3.30
+--------------------------------------------------------------------
+Release Date: April 23, 2014
+nopAccelerate Version: 2.4.3
+
+New Feature:
+Stock Availability Filter is available on Category page, Product Tag page and Search Page.
+Added stock availability as a relevancy factor on search page.
+
+--------------------------------------------------------------------
+
+Release Date: April 2, 2014
+nopAccelerate Version: 2.4.2
+
+Bug Fixes
+
+NopAccelerate:
+Fixed issue. Search Plugin Offers wrong widget zones.
+Fixed issue. Showing 0 product found after indexing the products.
+Fixed issue. Incremental Solr Product table is not updated with proper records when new store is created 
+Fixed issue. Issue with Price Range Filter - when displaying Range Filter based on user defined price ranges on Category Pages
+Fixed issue. Resource string for "Plugins.XcellenceIT.Solr.search.Fields.FacetOrderBy" not found.
+
+
+--------------------------------------------------------------------
+Release Date: February 26, 2014
+nopAccelerate Version: 2.4.1.1109
+
+Bug Fixes:
+Fixed issue. Object Reference error while adding new products through API
+Fixed issue. Unpublished product is indexed to solr
+Fixed issue. Category Listing Page taking too much time when "Include products from subcategories" is enabled.
+Fixed issue. Filter by Price - Slider UI Filters Start Price should be Rounded Down
+Fixed Issue. Solr Log records incorrect time for cycles
+
+
+
+------------------------------------------------
+Release Date: January 8, 2014
+nopAccelerate Version: 2.4.0.1040
+
+Bug Fixes:
+Tax is not applied on Product Price when display tax setting is set to inclusive tax
+Remove all category caching on first request. Now category caching build up on each category request. It was having issue with stores that have more than 1000 categories
+Changed query string separator to ("||") instead of comma (","). It was causing issues when filters name has comma in the name.
+Fixed issues when we have multiple languages enabled with SEO friendly URL for languages
+Fixed issue. Price Range Filter is missing on Categories that does not contains specification filter
+Fixed issue. Configure Page was not found when clicking "configure" on Solr.Search Widget
+Manufacturer does not list featured Products when plugin is enabled. Fixed.
+Sorting values are now localized for search page
+Category Name and Manufacturer Name is now searched by default
+Fixed Error: Object reference - When display local is not set from admin panel.
+Displayed price for group products/Product Variant in search page (e g. From $19)
+CustomProperties added with ExtendNopAccelerate is now searchable.
+ExtendNopAccelerate - Checking RouteValues rather than Controller Name
+Fixed issue. Added default value for Solr Incremental Data Import Batch Size 
+Fixed issue. BAD DATA errors logged in the log.
+UI. Sort by drop-down on search page is not displayed properly
+UI. Bullets appearing on check box for facets in Search Page in Chrome
+
+New Features:
+Support added for nopCommerce 3.20
+Performance Optimization. Optimized GetIndexedProductCount function to only get product count from Solr.
+Performance Optimization. Category Navigation taking too much time when many categories are available in database
+Performance Optimization. Category Pages were slower when displaying too many products on same page. Now storing group product count / product variant count in Solr.
+Added Category & Manufacturer filters on Product Tag pages
+Added Vendor filter on Category Page
+Display total number of group products / product variants on Product Box
+Deleting products from Apache Solr in batch. Without batch it was causing issues for sites with large catalog.
+Fine Tune Search - Low Boosting on nGram field 
+Checked compatibility with Apache Solr 4.6. Now nopAccelerate is compatible with Apache Solr 4.6
+
+
+------------------------------------------------
+Release Date: November 29, 2013
+nopAccelerate Version: 2.3.0.891
+
+Bug Fixes:
+
+    Did rounding-down on Price Range Filters.
+    Display jQuery UI Slider setting is visible even if we disable category catalog listing from solr
+    Order of Price Filter is wrong, it should match with Nop’s order
+    Arrow effect is not proper on search filter collapse when we click on Collapse panel.
+    Activity Log is not working in nopAccelerate plugins.
+    Hide message “0 products found” while Category has subcategories but no products are mapped to parent categories.
+    Used Language Resources for number of products found texts.
+    Change redirect homepage to invokehttp404 in category method of catalog controller.
+    Added no follow for Facet Link.
+    Multi currency is not supported in Featured Product on Category listing page.
+    With many products the animation on Indexed Product is too slow.
+    Fixed bug related to URLs when nopCommerce is hosted on Virtual directory.
+    nopAccelerate Menu can now be accessed only by User with Admin role
+    Fixed Bug: Price filters min & max price must change according to products fetched from solr.
+
+New Features:
+
+    Added SKU field in solr. SKU field is now searchable.
+    Added option for selecting price range filter with slider UI or Price facets filter.
+    Added missing feature of ForceRedirection AfterAddingToCart on nopAccelerate product boxes.
+    Added Product Search Event in Search Plugin.
+    UI Enhancements – all filters are in single filters box. Updated some styles for price slider.
+    Added feature to check solr connection is correct or not.
+    Added Option to define Order by Count or Index for Facets.
+    Added support for customer enters price feature.
+    Added support for price which starts with “from”
+    Added support for Call for price.
+    Added new API for Add/Update/Delete Product from Index and Start Indexing.
+    Add a feature to add/delete products from nopAccelerate Solr admin panel
+
+
+---------------------------------------------------------
+Release Date: September 10, 2013
+nopAccelerate Version: 2.2.0.712
+
+Bug Fixes:
+
+Facet-filters show incorrect count when used together. Issue was with tagging & excluding in Querying Solr.
+Price filter should reset the pagination on Category Pages.
+Filters doesn't work with certain special characters. Fixed with escape sequence.
+Price filter should not display with 0 Price if no products are found.
+Search Multi Facet interface must match navigation filters.
+Error Value was either too small or too large for Int16.
+Price range filter on category page showing 0 to 0.
+Unnecessary queries made to Solr to fetch Category Product Count.
+
+Features:
+
+MultiFaceting in Search with better user interface.
+Added support for dynamic category templates. 
+Added facility to Active/Deactive Widgets automatically after plugin Install/Uninstall.
+
+Refactoring:
+
+Option "Replace Remove filter text with image" removed as not required in nopAccelerate.
+Earlier there were saperate js for 3 filters. Now we put it inside 1. 
+Removed unused styles from plugin stylesheets.
+
+------------------------------------------------------
+Release Date: August 31, 2013
+nopAccelerate Version: 2.0.0.631
+
+- Bug Fix: Random Internal Server Error on Indexing process.
+- Bug Fix: Plugin doesn't offer filter when there are more than one filters defined with same attribute name.
+- Bug Fix: Fixed SeName related issue. Few product was redirected to homepage.

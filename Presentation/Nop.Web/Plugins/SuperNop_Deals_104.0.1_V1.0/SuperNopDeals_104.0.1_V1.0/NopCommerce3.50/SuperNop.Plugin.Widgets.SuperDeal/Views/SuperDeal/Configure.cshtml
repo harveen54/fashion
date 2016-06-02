@@ -1,0 +1,81 @@
+﻿@{
+    Layout = "";
+    ViewBag.Title = T("Admin.Plugin.SuperDeal").Text;
+}
+@using SuperNop.Plugin.Widgets.SuperDeal.Models;
+@model ConfigurationModel
+@using Nop.Web.Framework;
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" }) 
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()    
+    if (ViewBag.TrialExpireOn != null)
+    {
+        <div style="color:red;">You are running on trial version. Your trial version will end on @ViewBag.TrialExpireOn </div>
+    }
+    <div id="sncSuperDeal-accordion">
+        <table class="adminContent">
+            <tr>
+                <td class="adminTitle">
+                    @Html.OverrideStoreCheckboxFor(model => model.EnablePlugin_OverrideForStore, model => model.EnablePlugin, Model.ActiveStoreScopeConfiguration)
+                    @Html.NopLabelFor(model => model.EnablePlugin):
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.EnablePlugin)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.OverrideStoreCheckboxFor(model => model.EnableTodaysDeal_OverrideForStore, model => model.EnableTodaysDeal, Model.ActiveStoreScopeConfiguration)
+                    @Html.NopLabelFor(model => model.EnableTodaysDeal):
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.EnableTodaysDeal)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.OverrideStoreCheckboxFor(model => model.EnableUpcomingDeal_OverrideForStore, model => model.EnableUpcomingDeal, Model.ActiveStoreScopeConfiguration)
+                    @Html.NopLabelFor(model => model.EnableUpcomingDeal):
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.EnableUpcomingDeal)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.OverrideStoreCheckboxFor(model => model.EnableMissedDeal_OverrideForStore, model => model.EnableMissedDeal, Model.ActiveStoreScopeConfiguration)
+                    @Html.NopLabelFor(model => model.EnableMissedDeal):
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.EnableMissedDeal)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.OverrideStoreCheckboxFor(model => model.ShowDiscountBadge_OverrideForStore, model => model.ShowDiscountBadge, Model.ActiveStoreScopeConfiguration)
+                    @Html.NopLabelFor(model => model.ShowDiscountBadge):
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.ShowDiscountBadge)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.OverrideStoreCheckboxFor(model => model.ShowDealTimers_OverrideForStore, model => model.ShowDealTimers, Model.ActiveStoreScopeConfiguration)
+                    @Html.NopLabelFor(model => model.ShowDealTimers):
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.ShowDealTimers)
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table class="adminContent">
+        <tr>
+            <td colspan="2">
+                <input type="submit" name="save" class="k-button" value="@T("Admin.Common.Save")" />
+            </td>
+        </tr>
+    </table>
+}

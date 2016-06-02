@@ -1,0 +1,123 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@{
+    Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+}
+@model XcellenceIT.Plugin.Solr.Core.Models.SolrLogModel
+@using Nop.Services.Configuration;
+@using Nop.Core.Infrastructure;
+@using Nop.Web.Framework;
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="section-header">
+        <div class="title">
+            <img src="@Url.Content("~/Administration/Content/images/ico-system.png")" alt="" />
+            @T("Admin.System.Log.ViewLogDetails") <a href="@Url.RouteUrl("XcellenceIT.Plugin.Solr.Core.Log")" title="(back to Solr Log)">(back to Solr Log)</a>
+            </div>
+        <div class="options">
+            <input type="button" id="delete" name="delete" class="k-button" value="@T("Admin.Common.Delete")" />
+        </div>
+    </div>
+    
+    @Html.ValidationSummary(true)
+    <table class="adminContent">
+        
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.ShortMessage):
+            </td>
+            <td class="adminData">
+                @Html.DisplayFor(model => model.ShortMessage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.FullMessage):
+            </td>
+            <td class="adminData">
+                @Html.DisplayFor(model => model.FullMessage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.IpAddress):
+            </td>
+            <td class="adminData">
+                @Html.DisplayFor(model => model.IpAddress)
+            </td>
+        </tr>
+       @*<tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.PageUrl):
+            </td>
+            <td class="adminData">
+                @Html.DisplayFor(model => model.PageUrl)
+            </td>
+        </tr>*@
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.CreatedOn):
+            </td>
+            <td class="adminData">
+                @Html.DisplayFor(model => model.CreatedOn)
+            </td>
+        </tr>
+    </table>
+}
+<script type="text/javascript">
+    var selectedIds = @Model.Id;
+    $(document).ready(function () {
+        $('#delete').click(function (e) {
+            e.preventDefault();
+            var r = confirm("Are you sure you want to delete this item?");
+            if (r == true) {
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "/SolrAdmin/Delete/"+selectedIds ,
+                complete: function (data) {
+                    selectedIds = 0;
+                    window.location.href = "/Admin/Plugins/SolrCore/SolrAdmin/Log";
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert(thrownError);
+                },
+                traditional: true
+            });
+            return false;
+            }
+         });
+    });
+</script>

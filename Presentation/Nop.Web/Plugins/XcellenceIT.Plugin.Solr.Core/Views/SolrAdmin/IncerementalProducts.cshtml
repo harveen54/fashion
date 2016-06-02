@@ -1,0 +1,225 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@{
+    Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+}
+@model XcellenceIT.Plugin.Solr.Core.Models.SolrCoreModel
+@using Nop.Services.Configuration;
+@using Nop.Core.Infrastructure;
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="section-header">
+        <div class="title">
+            <img src="@Url.Content("~/Administration/Content/images/ico-configuration.png")" alt="" />
+         Product Status
+        </div>
+    </div>
+    
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                <text>Solr Status: </text>
+            </td>
+            <td class="adminData">
+                <select id="SolrStatusId">
+                    <option value="10">All</option>
+                    <option value="20">Pending</option>
+                    <option value="30">Indexed</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                <text>Is Deleted: </text>
+            </td>
+            <td class="adminData">
+                <select id="IsDeletedId">
+                    <option value="10">All</option>
+                    <option value="20">True</option>
+                    <option value="30">False</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                <text>Store: </text>
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchStoreId", Model.AvailableStores)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                <text>Language: </text>
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("languageId", Model.AllLanguage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                <text>Product Id:</text>
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => model.ProductId, new { id = "ProductId", Value = " ", @onkeypress = "return isNumberKey(event);" })
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit" id="btnSearch" class="k-button">@T("Admin.Common.Search")</button>
+            </td>
+        </tr>
+    </table>
+         
+    <table class="adminContent">
+        <tr>
+            <td>
+                   <div id="incremental-product-grid"></div>
+                <script>
+                    $(document).ready(function () {
+                        $("#incremental-product-grid").kendoGrid({
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@Html.Raw(Url.Action("IncerementalProductsList", "SolrAdmin" , new RouteValueDictionary() { { "Namespaces", "XcellenceIT.Plugin.Solr.Core.Controllers" }, { "area", "" } }))",
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: additionalData
+                                    }
+                                },
+                                schema: {
+                                    data: "Data",
+                                    total: "Total",
+                                    errors: "Errors"
+                                },
+                                error: function (e) {
+                                    display_kendoui_grid_error(e);
+                                    // Cancel the changes
+                                    this.cancelChanges();
+                                },
+                                pageSize: 15,
+                                serverPaging: true,
+                                serverFiltering: true,
+                                serverSorting: true
+                            },
+                            pageable: {
+                                refresh: true
+                            },
+                            editable: {
+                                confirmation: false,
+                                mode: "inline"
+                            },
+                            scrollable: false,
+                            // dataBound: onDataBound,
+                            columns: [
+                                {
+                                    field: "Id",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Id")",
+                                    width: 100
+                                }, {
+                                    field: "ProductId",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.ProductId")",
+                                    width: 100
+                                }, {
+                                    field: "SolrStatus",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.SolrStatus")",
+                                    width: 100,
+                                }, {
+                                    field: "IsDeleted",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.IsDeleted")",
+                                    width: 100,
+                                }, {
+                                    field: "Store",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Store")",
+                                    width: 100,
+                                }, {
+                                    field: "Language",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Language")",
+                                    width: 100,
+                                },
+                                   {
+                                    field: "InTime",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.InTime")",
+                                    width: 150,
+                                    type: "date",
+                                    format: "{0:G}"
+                                }
+                            ]
+                        });
+                    });
+                </script>
+            </td>
+        </tr>
+    </table>
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#btnSearch').click(function () {
+                if ($('#ProductId').val() < 0) {
+                    alert("Invalid Product Id");
+                    return null;
+                }
+                var grid = $('#incremental-product-grid').data('kendoGrid');
+                grid.dataSource.page(1); //new search. Set page size to 1
+                grid.dataSource.read();
+                return false;
+            });
+        });
+
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            return true;
+        }
+
+        function additionalData() {
+            return addAntiForgeryToken({
+                SolrStatusId: $('#SolrStatusId').val(),
+                IsDeletedId: $('#IsDeletedId').val(),
+                SearchStoreId: $('#SearchStoreId').val(),
+                languageId: $('#languageId').val(),
+                ProductId: $('#ProductId').val()
+            });
+        }
+
+    </script>
+    
+}
+                

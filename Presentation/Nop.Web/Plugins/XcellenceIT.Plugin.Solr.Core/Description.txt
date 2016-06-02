@@ -1,0 +1,8 @@
+﻿Group: XcellenceIT
+FriendlyName: NopAccelerate Solr Core Admin
+SystemName: XcellenceIT.Plugin.Solr.Core
+Version: 3.6.3
+SupportedVersions: 3.70
+Author: Xcellence-IT
+DisplayOrder: 1
+FileName: XcellenceIT.Plugin.Solr.Core.dll

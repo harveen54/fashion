@@ -1,0 +1,139 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@using XcellenceIT.Plugin.Solr.Search.Models
+@using Nop.Core.Infrastructure
+@using Nop.Core
+@model SolrSearchProductsModel
+@using Nop.Web.Models.Catalog;
+@{
+    var timeout = ViewBag.cached;
+    var _webHelper = EngineContext.Current.Resolve<XcellenceIT.Plugin.Solr.Core.Domain.ISolrWebHelper>();
+    string scrollClass = string.Empty;
+    int counter = 0;
+    var Stock = TempData["Stock"];
+}
+  @* Availability filter *@
+        @if (Model.CustomProducts.Count > 0)
+        {
+            if (Model.DisplayStockAvailability)
+            {
+            <div class="group @(Model.FiterDisplayMode == true ? "dropdown-bottom" : "")">              
+                @{
+                  string encodedCollapseStockAvailability = "npacc-filter-collapse-StockAvailability-filter";
+                  string encodedAvailabilityFilterArrowId = "npacc-filter-arrow-Availability-filter";
+                  string url = string.Empty;
+                  string stockurlExclude = _webHelper.ModifyQueryString(_webHelper.GetThisPageUrl(true), "stock=include_out_of_stock_products", null);
+                  string stockurlInclude = _webHelper.ModifyQueryString(_webHelper.GetThisPageUrl(true), "stock=exclude_out_of_stock_products", null);
+                }                             
+
+                @if (Model.FiterDisplayMode)
+                {
+                    //displays "clear" link if filter is selected
+                        if (System.Web.HttpContext.Current.Request.QueryString["stock"] != null)
+                        {
+                            url = System.Web.HttpContext.Current.Request.QueryString["stock"].ToString();
+                        }
+                        if (url == "exclude_out_of_stock_products" && Stock == "exclude_out_of_stock_products")
+                        {
+                            <a href="@stockurlExclude" rel="nofollow" onclick="npAccFiltersPushStateUrl('@stockurlExclude');callAjax('@stockurlExclude','@timeout'); return false;" class="clearCurrentFilter clear-position">@T("Filtering.ClearCurrentFilter")</a>
+                        }                       
+                        if (url == "include_out_of_stock_products" && Stock == "include_out_of_stock_products")
+                        {
+                            <a href="@stockurlInclude" rel="nofollow" onclick="npAccFiltersPushStateUrl('@stockurlInclude');callAjax('@stockurlInclude','@timeout'); return false;" class="clearCurrentFilter clear-position">@T("Filtering.ClearCurrentFilter")</a>
+                        }
+                     <a class="collapse" onclick="SlideUpDown('@(encodedCollapseStockAvailability)','@(encodedAvailabilityFilterArrowId)');">  
+                    <div class="title dropdown-title">
+                        <strong><span id="@encodedAvailabilityFilterArrowId" class="arrow"></span> @T("Nopaccelerate.Solr.Search.Filtering.Availability")</strong>
+                    </div> 
+                    </a>
+                }
+                else
+                {
+                     @*displays "clear" link if filter is selected*@
+                        if (System.Web.HttpContext.Current.Request.QueryString["stock"] != null)
+                        {
+                            url = System.Web.HttpContext.Current.Request.QueryString["stock"].ToString();
+                        }
+                        if (url == "exclude_out_of_stock_products" && Stock == "exclude_out_of_stock_products")
+                        {
+                            <a href="@stockurlExclude" rel="nofollow" onclick="npAccFiltersPushStateUrl('@stockurlExclude');callAjax('@stockurlExclude','@timeout'); return false;" class="clearCurrentFilter">@T("Filtering.ClearCurrentFilter")</a>
+                        }
+                        if (url == "include_out_of_stock_products" && Stock == "include_out_of_stock_products")
+                        {
+                            <a href="@stockurlInclude" rel="nofollow" onclick="npAccFiltersPushStateUrl('@stockurlInclude');callAjax('@stockurlInclude','@timeout'); return false;" class="clearCurrentFilter">@T("Filtering.ClearCurrentFilter")</a>
+                        }
+                    <a class="collapse" onclick="SlideUpDown('@(encodedCollapseStockAvailability)','@(encodedAvailabilityFilterArrowId)');">  
+                    <div class="title">
+                        <strong title="@T("Filtering.SpecificationFilter.collapse.title")">
+                        <span id="@encodedAvailabilityFilterArrowId" class="arrow"></span> @T("Nopaccelerate.Solr.Search.Filtering.Availability")</strong>       
+                    </div> 
+                        </a>
+                }
+                
+                <div id="@encodedCollapseStockAvailability" class="stock-availabilities @(Model.FiterDisplayMode == true ? "dropdown-list" : "")">
+                   
+                        @if (Model.StockAvailabilityItems == "Include_Out_of_Stock_Products")
+                        {
+                            if (Stock == null)
+                            {
+                                string stockURLExclude = _webHelper.ModifyQueryString(_webHelper.GetThisPageUrl(true), "stock=exclude_out_of_stock_products", null);
+                                <input type="checkbox" id="chk_id" onchange="npAccFiltersPushStateUrl('@stockURLExclude'); callAjax('@stockURLExclude','@timeout'); return false;" />
+                                <a href="@stockURLExclude" rel="nofollow" onclick="npAccFiltersPushStateUrl('@stockURLExclude'); callAjax('@stockURLExclude','@timeout'); return false;">@T("Nopaccelerate.Solr.Search.Exclude.OutOf.Stock")</a>
+                            }
+                            else
+                            {
+                                string stockURLInclude = _webHelper.ModifyQueryString(_webHelper.GetThisPageUrl(true), "stock=include_out_of_stock_products", null);
+                                <input type="checkbox" checked="checked" onchange="npAccFiltersPushStateUrl('@stockURLInclude');callAjax('@stockURLInclude','@timeout'); return false;" />
+                                <a href="@stockURLInclude" rel="nofollow" onclick="npAccFiltersPushStateUrl('@stockURLInclude');callAjax('@stockURLInclude','@timeout'); return false;">@T("Nopaccelerate.Solr.Search.Exclude.OutOf.Stock")</a>
+                            }
+                        }
+                        else
+                        {
+                            if (Stock == null)
+                            {
+                                string stockURLInclude = _webHelper.ModifyQueryString(_webHelper.GetThisPageUrl(true), "stock=include_out_of_stock_products", null);
+                                <input type="checkbox" onchange="npAccFiltersPushStateUrl('@stockURLInclude');callAjax('@stockURLInclude','@timeout'); return false;" />
+                                <a href="@stockURLInclude" rel="nofollow" onclick="npAccFiltersPushStateUrl('@stockURLInclude');callAjax('@stockURLInclude','@timeout'); return false;">@T("Nopaccelerate.Solr.Search.Include.OutOf.Stock")</a>
+                            }
+                            else
+                            {
+                                string stockURLExclude = _webHelper.ModifyQueryString(_webHelper.GetThisPageUrl(true), "stock=exclude_out_of_stock_products", null);
+                                <input type="checkbox" checked="checked" onchange="npAccFiltersPushStateUrl('@stockURLExclude'); callAjax('@stockURLExclude','@timeout'); return false;" />
+                                <a href="@stockURLExclude" rel="nofollow" onclick="npAccFiltersPushStateUrl('@stockURLExclude'); callAjax('@stockURLExclude','@timeout'); return false;">@T("Nopaccelerate.Solr.Search.Include.OutOf.Stock")</a>
+                            }
+                        }                   
+            </div>
+        </div>
+            }
+        }

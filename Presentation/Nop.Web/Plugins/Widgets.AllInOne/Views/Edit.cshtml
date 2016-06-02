@@ -1,0 +1,24 @@
+﻿@model AllInOneModel
+@using Nop.Plugin.Widgets.AllInOne.Models;
+@using Nop.Web.Framework;
+@{
+    Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+    //page title
+    ViewBag.Title = T("Plugins.Widgets.AllInOne.EditDetails").Text;
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "allinone-form" }))
+{
+    <div class="section-header">
+        <div class="title">
+            <img src="@Url.Content("~/Administration/Content/images/ico-catalog.png")" alt="" />
+            @T("Plugins.Widgets.AllInOne.EditDetails") - @Model.Name @Html.ActionLink("(" + T("Plugins.Widgets.AllInOne.BackToList") + ")", "List")
+        </div>
+        <div class="options">
+            <input type="submit" name="save" class="k-button" value="@T("Admin.Common.Save")" />
+            <input type="submit" name="save-continue" class="k-button" value="@T("Admin.Common.SaveContinue")" />
+            <span id="allinone-delete" class="k-button">@T("Admin.Common.Delete")</span>
+        </div>
+    </div>
+    @Html.Partial("~/Plugins/Widgets.AllInOne/Views/_CreateOrUpdate.cshtml", Model)
+}
+@Html.DeleteConfirmation("allinone-delete")

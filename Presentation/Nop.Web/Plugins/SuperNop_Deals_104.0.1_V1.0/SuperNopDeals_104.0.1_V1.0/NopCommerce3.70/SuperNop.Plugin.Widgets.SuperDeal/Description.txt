@@ -1,0 +1,8 @@
+﻿Group: 1Widgets
+FriendlyName: SuperDeal Plugin
+SystemName: SuperNop.Plugin.Widgets.SuperDeal
+Version: 1.00
+SupportedVersions: 3.70
+Author: SuperNopCommerce team
+DisplayOrder: 1
+FileName: SuperNop.Plugin.Widgets.SuperDeal.dll

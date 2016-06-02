@@ -1,0 +1,213 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@using XcellenceIT.Plugin.Solr.Search.Models
+@using Nop.Core.Infrastructure
+@using Nop.Core
+@model SolrSearchProductsModel
+@using Nop.Web.Models.Catalog;
+@{
+    var timeout = ViewBag.cached;
+    var _webHelper = EngineContext.Current.Resolve<XcellenceIT.Plugin.Solr.Core.Domain.ISolrWebHelper>();
+    string attributeClearUrl = _webHelper.RemoveQueryString(_webHelper.GetThisPageUrl(true), "specs").ToString();
+    string scrollClass = string.Empty;
+    int counter = 0;
+}
+@if (Model.AttributeFilter.Count > 0)
+{
+    if (Model.AttributeFilter.Count > 0)
+    {
+        foreach (var m in Model.AttributeFilter)
+        {
+            var attribute = m.Value.ToList();
+            bool hasColorOptionsInGroup = false;
+            if (attribute.Count > 0)
+            {
+                hasColorOptionsInGroup = attribute.Any(values => values.ColorSquaresRgb != null);
+            }
+            if (m.Value.Count > 0)
+            {
+                <div class="group @(Model.FiterDisplayMode == true ? "dropdown-bottom" : "")">
+                    @{
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                foreach (char c in m.Key.Key)
+                {
+                    if (Char.IsLetterOrDigit(c))
+                    {
+                        sb.Append(c);
+                    }
+                }
+                // all Id should be unique
+                string encodedKey = "npacc-att-filter-search-box-" + sb;
+                string encodedCollapseTitle = "npacc-att-filter-collapse-" + counter;
+                string encodedCollapseItem = "npacc-att-filter-collapse-item-" + counter;
+                string encodedArrowId = "npacc-att-filter-arrow-id-" + counter;
+                counter++;
+                    }
+
+                    @if (Model.FiterDisplayMode)
+                    {
+                        if (!String.IsNullOrWhiteSpace(m.Key.Value))
+                        {
+                            <a href="@m.Key.Value" rel="nofollow" onclick="npAccFiltersPushStateUrl('@m.Key.Value');callAjax('@m.Key.Value','@timeout'); return false;" class="clearCurrentFilter clear-position">@T("Filtering.ClearCurrentFilter")</a>
+                        }
+                        <a class="collapse" onclick="SlideUpDown('@(encodedCollapseItem)','@(encodedArrowId)');">  
+                        <div class="title dropdown-title">
+                        <strong id="@encodedCollapseTitle"><span id="@encodedArrowId" class="arrow"></span> @m.Key.Key</strong> 
+                        </div>
+                        </a>
+                    }
+                    else
+                    {
+                        if (!String.IsNullOrWhiteSpace(m.Key.Value))
+                            {
+                                <a href="@m.Key.Value" rel="nofollow" onclick="npAccFiltersPushStateUrl('@m.Key.Value');callAjax('@m.Key.Value','@timeout'); return false;" class="clearCurrentFilter">@T("Filtering.ClearCurrentFilter")</a>
+                            }
+                        <a class="collapse" onclick="SlideUpDown('@(encodedCollapseItem)','@(encodedArrowId)');">  
+                        <div class="title">
+                            <strong title="@T("Filtering.SearchFilters.collapse.title")" id="@encodedCollapseTitle">
+                                <span id="@encodedArrowId" class="arrow"></span> @m.Key.Key
+                            </strong>
+                            
+                        </div>
+                        </a>
+                    }
+
+                    <div id="@encodedCollapseItem" class="filter-item-group @(Model.FiterDisplayMode == true ? "dropdown-list" : "")">
+                        @* if filter count is greater than 5 then it will display scroll bar *@
+                        @if (m.Value.Count > Model.MaxFilterOptionsForSearchBoxInFilters)
+                        {
+                            {
+                                scrollClass = "scroll";
+                            }
+                            <div class="filter-search-box">
+                                <input type="text" class="npacc-filter-search" id="@(encodedKey)" placeholder="@(T("Filtering.placeholder.filter.search") + " " + m.Key.Key)" />
+                            </div>
+                        }
+                        else
+                        {
+                            {
+                                scrollClass = string.Empty;
+                            }
+                        }
+                        <ul id="@(encodedKey + "-item")" class="@scrollClass">
+
+                            @*Color-square filter*@
+                            @if (hasColorOptionsInGroup)
+                            {
+                                foreach (var option in m.Value)
+                                {
+                                    string filterItemStyle = "background: rgba(0, 0, 0, 0) linear-gradient(135deg, #ffffff 0%, #ffffff 50%, #000000 50%, #000000 100%) repeat scroll 0 0;";
+                                    if (option.ColorSquaresRgb != null)
+                                    {
+                                        filterItemStyle = string.Format("background-color:{0}", option.ColorSquaresRgb);
+                                    }
+                                    
+                                    <li class="item">
+                                        @if (option.IsChecked)
+                                        {
+                                            <a href="@option.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;">
+                                                <input class="regular-checkbox big-checkbox" type="checkbox" checked="checked" onchange="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" />
+                                                <label for="checkbox-2-1" style="@filterItemStyle"></label>
+                                                <span original="@(option.OptionName + " (" + option.FacetCount + ")")">@option.OptionName <text>(</text>@option.FacetCount<text>)</text></span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            if (option.FacetCount > 0)
+                                            {
+                                                <a href="@option.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;">
+                                                    <input class="regular-checkbox big-checkbox" type="checkbox" onchange="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" />
+                                                    <label for="checkbox-2-1" style="@filterItemStyle"></label>
+                                                    <span original="@(@option.OptionName + " (" + option.FacetCount + ")")">@option.OptionName <text>(</text>@option.FacetCount<text>)</text></span>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" onchange="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" disabled="disabled" />
+                                                <a class="disabled"><span original="@(option.OptionName + " (" + option.FacetCount + ")")">@option.OptionName <text>(</text>@option.FacetCount<text>)</text> </span></a>
+                                            }
+                                        }
+
+                                    </li>
+                                }
+                            }
+
+                            else
+                            {
+                                foreach (var option in m.Value)
+                                {
+                                    <li class="item">
+                                        @if (option.IsChecked)
+                                        {
+                                            <input type="checkbox" checked="checked" onchange="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" />
+                                            <a href="@option.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;">
+                                                <span original="@(option.OptionName + " (" + option.FacetCount + ")")">
+                                                    @option.OptionName
+                                                    <text>(</text>@option.FacetCount<text>)</text>
+                                                </span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            if (option.FacetCount > 0)
+                                            {
+                                                <input type="checkbox" onchange="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" />
+                                                <a href="@option.URL" rel="nofollow" onclick="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;">
+                                                    <span original="@(option.OptionName + " (" + option.FacetCount + ")")">
+                                                        @option.OptionName
+                                                        <text>(</text>@option.FacetCount<text>)</text>
+                                                    </span>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" onchange="npAccFiltersPushStateUrl('@option.URL');callAjax('@option.URL','@timeout'); return false;" value="@option.OptionName (@option.FacetCount)" disabled="disabled" />
+                                                <a class="disabled">
+                                                    <span original="@(option.OptionName + " (" + option.FacetCount + ")")">
+                                                        @option.OptionName
+                                                    <text>(</text>@option.FacetCount<text>)</text>
+                                                </span>
+                                            </a>
+                                            }
+                                        }
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+        }
+    }
+}

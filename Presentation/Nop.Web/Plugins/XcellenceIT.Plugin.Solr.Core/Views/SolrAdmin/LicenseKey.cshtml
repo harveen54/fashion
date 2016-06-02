@@ -1,0 +1,88 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@model XcellenceIT.Plugin.Solr.Core.Models.LicenseKeyModel
+@using System;
+@using Nop.Web.Framework;
+@using Nop.Web.Framework.UI;
+@{
+    Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/Plugins/XcellenceIT.Plugin.Solr.Core/Content/nopaccelerate-core.css" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (('@ViewBag.Warning')) {
+
+            $("#notice").addClass('license-key-notice');
+        }
+    });
+</script>
+   
+@using (Html.BeginForm())
+{  
+    @Html.AntiForgeryToken()
+    <div class="section-header">
+        <div class="title">
+            <img src="@Url.Content("~/Administration/Content/images/ico-configuration.png")" alt="" />
+            NopAccelerate Solr Core Admin
+        </div>
+        <div class="options">
+             <button type="submit" name="save" class="t-button" value="save">
+                    @T("Admin.Common.Save")
+             </button>
+        </div>
+    </div> 
+
+    <div id="notice">@Html.Raw(ViewBag.Warning)</div>
+
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                 @Html.NopLabelFor(model => model.StoreId):
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("StoreId", Model.AvailableStores)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                 @Html.NopLabelFor(model => model.LicKey):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.LicKey)
+            </td>
+        </tr>
+    </table> 
+}  

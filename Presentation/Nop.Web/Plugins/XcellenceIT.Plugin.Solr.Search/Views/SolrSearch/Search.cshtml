@@ -1,0 +1,636 @@
+﻿@* *************************************************************************
+    *                                                                       *
+    * nopAccelerate - Solr Integration Extension for nopCommerce            *
+    * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+    *                                                                       *
+    *************************************************************************
+    *                                                                       *
+    * Email: info@nopaccelerate.com                                         *
+    * Website: http://www.nopaccelerate.com                                 *
+    *                                                                       *
+    *************************************************************************
+    *                                                                       *
+    * This  software is furnished  under a license  and  may  be  used  and *
+    * modified  only in  accordance with the terms of such license and with *
+    * the  inclusion of the above  copyright notice.  This software or  any *
+    * other copies thereof may not be provided or  otherwise made available *
+    * to any  other  person.   No title to and ownership of the software is *
+    * hereby transferred.                                                   *
+    *                                                                       *
+    * You may not reverse  engineer, decompile, defeat  license  encryption *
+    * mechanisms  or  disassemble this software product or software product *
+    * license.  Xcellence-IT may terminate this license if you don't comply *
+    * with  any  of  the  terms and conditions set forth in  our  end  user *
+    * license agreement (EULA).  In such event,  licensee  agrees to return *
+    * licensor  or destroy  all copies of software  upon termination of the *
+    * license.                                                              *
+    *                                                                       *
+    * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+    * http://www.nopaccelerate.com/terms/                                   *
+    *                                                                       *
+    ************************************************************************* *@
+
+@using Nop.Web.Framework.UI
+@using Nop.Web.Framework
+@using Nop.Web.Extensions
+@model XcellenceIT.Plugin.Solr.Search.Models.SolrSearchProductsModel
+@{
+
+    if (!ViewBag.IsAjaxRequest)
+    {
+        Layout = "~/Views/Shared/_Root.cshtml";
+    }
+    else
+    {
+        Layout = "";
+    }
+
+    Html.AddCssFileParts("~/Plugins/XcellenceIT.Plugin.Solr.Search/Content/nopaccelerate-search-styles.css");
+    Html.AddCssFileParts("~/Plugins/XcellenceIT.Plugin.Solr.Search/Content/jquery.ias.css");
+    Html.AddScriptParts(ResourceLocation.Head, "~/Plugins/XcellenceIT.Plugin.Solr.Search/Scripts/jquery.jscroll.min.js");
+    Html.AddScriptParts(ResourceLocation.Foot, "~/Plugins/XcellenceIT.Plugin.Solr.Search/Scripts/nopAccelerateSearch.Ajax.js");
+    Html.AddScriptParts(ResourceLocation.Foot, "~/Plugins/XcellenceIT.Plugin.Solr.Search/Scripts/jquery.history.js");
+    Html.AddScriptParts(ResourceLocation.Head, "~/Plugins/XcellenceIT.Plugin.Solr.Search/Scripts/jquery.lazyload.min.js");
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Search").Text);
+}
+@{
+    //current category ID
+    int currentCategoryId = 0;
+    if (Url.RequestContext.RouteData.Values.ContainsKey("categoryId"))
+    {
+        currentCategoryId =
+        Convert.ToInt32(Url.RequestContext.RouteData.Values["categoryId"].ToString());
+    }
+
+    //current manufacturer ID
+    int currentManufacturerId = 0;
+    if (Url.RequestContext.RouteData.Values.ContainsKey("manufacturerId"))
+    {
+        currentManufacturerId =
+        Convert.ToInt32(Url.RequestContext.RouteData.Values["manufacturerId"].ToString());
+    }
+
+    //current product ID
+    int currentProductId = 0;
+    if (Url.RequestContext.RouteData.Values.ContainsKey("productId"))
+    {
+        currentProductId =
+        Convert.ToInt32(Url.RequestContext.RouteData.Values["productId"].ToString());
+    }
+
+    var _webHelper = Nop.Core.Infrastructure.EngineContext.Current.Resolve<Nop.Core.IWebHelper>();
+    var currentPageUrl = _webHelper.GetThisPageUrl(true);
+    var clearAllUrl = _webHelper.RemoveQueryString(currentPageUrl, "category");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "manufacturer");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "specs");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "vendor");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "rating");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "stock");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "viewmode");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "pagesize");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "orderby");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "as");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "isc");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "sid");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "mid");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "cid");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "pf");
+    clearAllUrl = _webHelper.RemoveQueryString(clearAllUrl, "pt");
+
+}
+
+@using Nop.Web.Models.Catalog;
+
+<div id="npacc-search">
+    <div id="npacc-ajax-loading" class="npacc-ajax-loading-overlay" style="display:none"></div>
+    <div class="side-2">
+        @Html.Widget("left_side_column_before")
+        @*Category Navigation loading from nopAccelerate plugin for better performance on all pages of store. *@
+        @{
+            var _pluginFinder = Nop.Core.Infrastructure.EngineContext.Current.Resolve<Nop.Core.Plugins.IPluginFinder>();
+            var _pluginSettings = Nop.Core.Infrastructure.EngineContext.Current.Resolve<XcellenceIT.Plugin.Solr.Search.XcellenceITSolrSearchPluginSettings>();
+            if (_pluginFinder.GetPluginDescriptorBySystemName("XcellenceIT.Plugin.Solr.Search") == null || !_pluginSettings.EnableSolrSearch)
+            {
+                @Html.Action("CategoryNavigation", "Catalog", new { currentCategoryId = currentCategoryId, currentProductId = currentProductId });
+            }
+            else
+            {
+                @Html.Action("CategoryNavigation", "SolrSearch", new { currentCategoryId = currentCategoryId, currentProductId = currentProductId });
+            }}
+        @*@Html.Widget("left_side_column_before")*@
+        @Html.Widget("left_side_column_after_category_navigation")
+        @Html.Action("ManufacturerNavigation", "Catalog", new { currentManufacturerId = currentManufacturerId })
+        @Html.Action("VendorNavigation", "Catalog")
+        @Html.Action("RecentlyViewedProductsBlock", "Product", new { productThumbPictureSize = 64 })
+        @Html.Action("PopularProductTags", "Catalog")
+        @Html.Action("PollBlock", "Poll", new { systemKeyword = "LeftColumnPoll" })
+        @Html.Widget("left_side_column_after")
+    </div>
+    <div class="center-2">
+        @Html.Widget("main_column_before")
+        <div class="page search-page">
+            <div class="page-title">
+                <h1>@T("Search")</h1>
+            </div>
+            <div class="page-body">
+                <div class="search-input">
+                    @using (Html.BeginRouteForm("ProductSearch", FormMethod.Get))
+                    {
+                        <div class="fieldset">
+                            <div class="form-fields">
+                                <script type="text/javascript">
+                                    $(document).ready(function () {
+
+                                        $("#@Html.FieldIdFor(model => model.As)").click(toggleAdvancedSearch);
+
+                                        toggleAdvancedSearch();
+                                    });
+
+                                    function toggleAdvancedSearch() {
+
+                                        if ($('#@Html.FieldIdFor(model => model.As)').is(':checked')) {
+                                            $('#advanced-search-block').show();
+                                        }
+                                        else {
+                                            $('#advanced-search-block').hide();
+                                        }
+                                    }
+
+                                </script>
+                                <div class="basic-search">
+                                    <div class="inputs">
+                                        @Html.LabelFor(model => model.Q, new { }, ":")
+                                        @Html.TextBoxFor(model => model.Q, new { @class = "search-text" })
+                                    </div>
+                                    @Html.Widget("productsearch_page_basic")
+                                    <div class="inputs reversed">
+                                        @Html.CheckBoxFor(model => model.As)
+                                        @Html.LabelFor(model => model.As)
+                                    </div>
+                                </div>
+                                <div class="advanced-search" id="advanced-search-block">
+                                    @if (Model.AvailableCategories.Count > 0)
+                                    {
+                                        <div class="inputs">
+                                            @Html.LabelFor(model => model.Cid, new { }, ":")
+                                            @Html.DropDownListFor(model => model.Cid, Model.AvailableCategories)
+                                        </div>
+                                        <div class="inputs reversed">
+                                            @Html.CheckBoxFor(model => model.Isc)
+                                            @Html.LabelFor(model => model.Isc)
+                                        </div>
+                                    }
+                                    @if (Model.AvailableManufacturers.Count > 0)
+                                    {
+                                        <div class="inputs">
+                                            @Html.LabelFor(model => model.Mid, new { }, ":")
+                                            @Html.DropDownListFor(model => model.Mid, Model.AvailableManufacturers)
+                                        </div>
+                                    }
+                                    <div class="inputs">
+                                        <label>@T("Search.PriceRange"):</label>
+                                        <span class="price-range">
+                                            @T("Search.PriceRange.From")
+                                            @Html.TextBoxFor(model => model.Pf, new { @class = "price-from" })
+                                            @T("Search.PriceRange.To")
+                                            @Html.TextBoxFor(model => model.Pt, new { @class = "price-to" })
+                                        </span>
+                                    </div>
+                                    @if (!Model.EnableSearchInDescriptions)
+                                    {
+                                        <div class="inputs reversed">
+                                            @Html.CheckBoxFor(model => model.Sid)
+                                            @Html.LabelFor(model => model.Sid)
+                                        </div>
+                                    }
+                                    @Html.Widget("productsearch_page_advanced")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="buttons">
+                            <input type="submit" class="button-1 search-button" value="@T("Search")" />
+                        </div>
+                        if (!String.IsNullOrEmpty(Model.Warning))
+                        {
+                            <div class="warning">
+                                @Model.Warning
+                            </div>
+                        }
+                    }
+                </div>
+
+                @if (Model.CustomProducts.Count > 0)
+                {
+                    @Html.Partial("_CatalogSelectors", Model.PagingFilteringContext, new ViewDataDictionary())
+                }
+
+                <div>
+                    @if (Model.EnableRemovableTagFilters)
+                    {
+                        <div id="tagFilters"><ul id="tagsList" class="tagsList"></ul></div>
+                    }
+                </div>
+
+                <div>
+                    @* Number of products found.*@
+                    @if (Model.ShowTotalNumberOfProducts)
+                    {
+                        <div class="category-products-count">
+                            <text> <span style="font-weight:bold">“@Model.Q” </span>@String.Format(T("nopaccelerate.solr.search.numberofproductsfound").Text, Model.productsFound, (Model.CategoryFilter.Count == 0 ? 0 : Model.CategoryFilter.FirstOrDefault().Value.Count)) </text>
+                        </div>
+                    }
+                </div>
+
+                <div>
+                    @if (Model.DisplayUnpublishLanguageMessage)
+                    {
+                        <div id="display-unpublished-language-message">
+                            <b>Note:</b> <span>We suggest you to un-publish the language until the Core is configured and fully indexed. You can still index data for unpublished language.</span>
+                        </div>                    
+                    }
+                </div>
+                @Html.Widget("productsearch_page_before_results")
+                <div class="search-results">
+                    @if (Model.NoResults)
+                    {
+                        <div class="no-result">
+                            @T("Search.NoResultsText")
+                        </div>
+                    }
+                    <div id="npacc-search-filters" class="search-filters" style="display: none">
+                        <div class="filter-item">
+                            @if ((Model.CategoryFilter.Count > 0) || (Model.ManufacturerFilter.Count > 0) || (Model.AttributeFilter.Count > 0) || (Model.CustomProducts.Count > 0))
+                            {
+                                <div class="product-filters search-product-filter">
+                                    <div class="filter-title">
+                                        <strong>@T("Filtering.SearchFilter")</strong>
+                                        <a href="@clearAllUrl" id="npacc-clearAll" class="clearAllFilters" style="display:none;">@T("Filtering.ClearAllFiltres")</a>
+                                    </div>
+                                    <div class="filter-content">
+                                        <div class="available-items">
+                                            @if (Model.ShowCategoryFilter || Model.ShowRatingFilter || Model.EnablePriceRangeFilter)
+                                            {
+                                                @Html.Partial("_FilterCategoryBox", Model)
+                                            }
+                                            @if (Model.ShowManufacturerFilter)
+                                            {
+                                                @Html.Partial("_FilterManufacturerBox", Model)
+                                            }
+                                            @if (Model.ShowAttributeFilter)
+                                            {
+                                                @Html.Partial("_FilterAttributeBox", Model)
+                                            }
+                                            @if (Model.DisplayStockAvailability)
+                                            {
+                                                @Html.Partial("_FilterStockAvailabilityBox", Model)
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @* Product Suggestions e.g Did you mean ?*@
+                    @if (Model.ProductsSuggestions.Count > 0)
+                    {
+
+                        if (Model.ProductsSuggestions.Count == 1)
+                        {
+                            <div class="search-suggestions">
+                                <div class="no-result">@Html.Raw(String.Format(T("nopaccelerate.solr.search.spellcheck.noresultfoundtext").Text, Model.Q))</div>
+                                <div class="suggested-results">@Html.Raw(String.Format(T("nopaccelerate.solr.search.spellcheck.showingresulttext").Text, Model.ProductsSuggestionsCollation))</div>
+                                @{Model.Q = Model.ProductsSuggestionsCollation;}
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="search-suggestions">
+                                <div class="no-result">@Html.Raw(String.Format(T("nopaccelerate.solr.search.spellcheck.noresultfoundtext").Text, Model.Q))</div>
+                                <div class="suggested-results">@Html.Raw(String.Format(T("nopaccelerate.solr.search.spellcheck.showingresulttext").Text, Model.ProductsSuggestionsCollation)) @Html.Raw(String.Format(T("nopaccelerate.solr.search.spellcheck.didyoumeantext").Text, Model.ProductsSuggestions[1])) </div>
+                                @{Model.Q = Model.ProductsSuggestionsCollation;}
+                            </div>
+                        }
+                    }
+
+                    @{
+                        /*Keep RenderEmptyParameters(false), if it is true then it converts url into lowercase that cause issue into solr query and that's why it shows 0-product on next page.*/
+                        var pager = Html.Pager(Model.PagingFilteringContext).QueryParam("pagenumber").BooleanParameterName("as").BooleanParameterName("isc").BooleanParameterName("sid").RenderEmptyParameters(false);
+                    }
+                    @*product list*@
+                    @if (Model.CustomProducts.Count > 0 && Model.EnableInfiniteScrolling == true)
+                    {
+                        <div class="@(Model.PagingFilteringContext.ViewMode == "list" ? "product-list" : "product-grid")" id="product-grid">
+                            <div class="item-grid">
+                                <div class="npacc-content">
+                                    @foreach (var product in Model.CustomProducts)
+                                    {
+                                        <div class="item-box">
+                                            @Html.Partial("_ProductBox", product)
+                                        </div>
+                                    }
+                                    @if (!pager.IsEmpty())
+                                    {
+                                        <div class="pager">
+                                            @pager
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    else if (Model.CustomProducts.Count > 0 && Model.EnableInfiniteScrolling == false)
+                    {
+                        <div class="@(Model.PagingFilteringContext.ViewMode == "list" ? "product-list" : "product-grid")">
+                            <div class="item-grid">
+                                @foreach (var product in Model.CustomProducts)
+                                {
+                                    <div class="item-box">
+                                        @Html.Partial("_ProductBox", product)
+                                    </div>
+                                }
+                            </div>
+
+                        </div>
+                        if (!pager.IsEmpty())
+                        {
+                            <div class="pager">
+                                @pager
+                            </div>
+                        }
+                    }
+                    <button class="search-infinite-next" onclick="showNext()">@T("Plugins.XcellenceIT.Solr.Search.Scroll.More")</button>
+
+                </div>            
+            </div>    
+             @Html.Widget("productsearch_page_after_results")        
+        </div>
+        @Html.Widget("main_column_after")
+    </div>
+
+<script type="text/javascript">
+        var n = $("input:checked").length;
+        var tempURL = window.location.href.toLowerCase();
+        if (tempURL.indexOf("as=true") != -1) {
+            if (n > 1) {
+                $('#npacc-clearAll').attr('style', 'display:block;');
+            }
+        }
+        else {
+            if (n > 0) {
+                $('#npacc-clearAll').attr('style', 'display:block;');
+            }
+        }
+        var filterDisplaymode = "@Model.FiterDisplayMode";
+        var filterDisplaymodeforMobile = "@Model.FilterDisplayModeForMobile";
+        var IsInfiniteScrollEnable = "@Model.EnableInfiniteScrolling";
+        var shownextbtn = "";
+        var whenToShow = 3; /* value will be (autoTriggerUntil + 1). So, Next-button will display after 4 pages */
+
+        $(document).ready(function () {
+
+            $('.pager a').attr('rel', 'nofollow');
+
+            if (IsInfiniteScrollEnable == "True") {
+                if ('@pager' == "" && $('#product-grid').length > 0) {
+                    $('#product-grid').jscroll.destroy();
+                    $('.npacc-ajax-loading-overlay').attr('style', 'display:none;');
+                }
+                else {
+                    $('.pager a').attr('style', 'display:none;');
+                    $('.pager span').attr('style', 'display:none;');
+                }
+            }
+
+            var w = window, d = document, e = d.documentElement, g = d.getElementsByTagName('body')[0], x = w.innerWidth || e.clientWidth || g.clientWidth, y = w.innerHeight || e.clientHeight || g.clientHeight;
+            var width = ((w.innerWidth == 'undefined') ? $(window).width() : window.innerWidth);
+
+            if (width <= 767) {
+            if (filterDisplaymode == "True" && filterDisplaymodeforMobile == "False")
+            {
+                    $('div.group').removeClass("dropdown-bottom");
+                    $('div.title').removeClass("dropdown-title");
+                    $('div.filter-item-group').removeClass("dropdown-list");
+                    $('a.clearCurrentFilter').removeClass("clear - position");
+                    $('div.filter-item-group').removeClass("dropdown-list");
+                    $('div.stock-availabilities').removeClass("dropdown-list");
+                    $('.search-product-filter .available-items .group .clearCurrentFilter').attr("style", "margin-top:3px;");
+                }
+            else if(filterDisplaymode == "False" && filterDisplaymodeforMobile == "True")
+            {
+                    $('div.group').addClass("dropdown-bottom");
+                    $('div.title').addClass("dropdown-title");
+                    $('div.filter-item-group').addClass("dropdown-list");
+                    $('a.clearCurrentFilter').addClass("clear-position");
+                    $('div.filter-item-group').addClass("dropdown-list");
+                    $('div.stock-availabilities').addClass("dropdown-list");
+                }
+            }
+        });
+
+        //loading more
+        function showNext() {
+            $('.next-page').find('a').trigger('click');
+        }
+
+        //Infinite Scroll
+        $('#product-grid').jscroll({
+            loadingHtml: '<div class="npacc-ajax-loading-overlay" />',
+            autoTrigger: true,
+            autoTriggerUntil: 2,
+            nextSelector: '.next-page a',
+            contentSelector: '.npacc-content',
+            padding: 30,
+            pagingselector: '.jscroll-inner .jscroll-added:last-child .next-page a',
+            callback: call,
+        });
+
+        function call() {
+            $(".jscroll-inner .jscroll-added:last-child img.lazy").show().lazyload({
+                effect: "fadeIn"
+            });
+
+            $(document).on("mousedown", ".product-url", function (e) {
+                //call ajax with search term for store clicks into the table
+                var serchTerm = $.urlParam('q');
+                $.ajax(
+                     {
+                         type: 'POST',
+                         url: 'SolrSearch/AddSearchTermClick',
+                         data: { seachTerm: serchTerm },
+                         success: function (data) {
+                             console.log("success");
+                         },
+                         error: function () {
+                             console.log("error");
+                         }
+                     });
+            });
+
+            $.urlParam = function (name) {
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                return results[1] || 0;
+            }
+
+            $(window).scroll();
+            $('.pager a').attr('rel', 'nofollow');
+            $('.pager a').attr('style', 'display:none;');
+            $('.pager span').attr('style', 'display:none;');
+
+            shownextbtn = $('.jscroll-inner .jscroll-added:last-child .current-page span').text();
+            if (shownextbtn >= whenToShow && ($('.next-page').text() != "")) {
+                $('.search-infinite-next').attr('style', 'display:block;');
+            }
+            else { $('.search-infinite-next').attr('style', 'display:none;'); }
+        }
+
+        //Pagination Ajax Call
+    $('.pager li a').click(function () {        
+            if (IsInfiniteScrollEnable == "False") {
+            callAjax($(this).attr('href'),'@ViewBag.cached');
+                npAccFiltersPushStateUrl($(this).attr('href'), '@ViewBag.cached');
+                return false;
+            }
+        });
+
+        $(document).on("mousedown", ".product-url", function (e) {
+            //call ajax with search term for store clicks into the table
+            var serchTerm = $.urlParam('q');
+            $.ajax(
+                 {
+                     type: 'POST',
+                     url: 'SolrSearch/AddSearchTermClick',
+                     data: { seachTerm: serchTerm },
+                     success: function (data) {
+                         console.log("success");
+                     },
+                     error: function () {
+                         console.log("error");
+                     }
+                 });
+        });
+
+        $.urlParam = function (name) {
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            return results[1] || 0;
+        }
+</script>
+
+@if (Model.EnableRemovableTagFilters)
+{
+        <script type="text/javascript">
+            var currURL = window.location.href;
+            $(document).ready(function () {
+                var hasFilters = currURL.split('?')[1]; //prepare filter tags on page refresh if any
+                if (hasFilters) {
+                    prepareSpecificationFilterTags(currURL);
+                }
+            });
+
+            $('ul#tagsList li span.tag').live('click', function (e) {
+                if (e.handled !== true) //this will prevent event triggering more then once
+                {
+                    var n = $("input:checked").length;
+                    var tempURL = window.location.href.toLowerCase();
+                    if (tempURL.indexOf("as=true") != -1) {
+                        if (n > 1) {
+                            $('#npacc-clearAll').attr('style', 'display:block;');
+                        }
+                    }
+                    else {
+                        if (n > 0) {
+                            $('#npacc-clearAll').attr('style', 'display:block;');
+                        }
+                    }
+                    var removedFilter = $(this).find('span').next('span:first');
+                    var filterPair = $(this).closest('li').find('input.filterPair').val();
+                    currURL = replaceAllString(currURL, "%3a", ":"); currURL = replaceAllString(currURL, "%7c", "|");
+                    currURL = replaceAllString(currURL, "%2c", ",");
+                    currURL = currURL.replace(filterPair, "");
+                    $(this).closest('li').remove();
+                    var IsSecification = $(removedFilter).hasClass("sSpecification");
+                    var IsCategory = $(removedFilter).hasClass("sCategory");
+                    var IsVendor = $(removedFilter).hasClass("sVendor");
+                    var IsManufacturer = $(removedFilter).hasClass("sManufacturer");
+                    var IsRating = $(removedFilter).hasClass("sRating");
+                    var IsPrice = $(removedFilter).hasClass("sPrice");
+                    if ((IsSecification) || (IsCategory) || (IsVendor) || (IsManufacturer) || (IsRating)) {
+                        if ($('ul#tagsList li span.sSpecification').length == 0) {
+                            if (currURL.indexOf("specs") >= 0) {
+                                currURL = removeParameter(currURL, "specs");
+                                currURL = currURL.replace(/&amp/g, '');
+                            }
+                        }
+                        if ($('ul#tagsList li span.sCategory').length == 0) {
+                            if (currURL.indexOf("category") >= 0) {
+                                currURL = removeParameter(currURL, "category");
+                                currURL = currURL.replace(/&amp/g, '');
+                            }
+                        }
+                        if ($('ul#tagsList li span.sVendor').length == 0) {
+                            if (currURL.indexOf("vendor") >= 0) {
+                                currURL = removeParameter(currURL, "vendor");
+                                currURL = currURL.replace(/&amp/g, '');
+                            }
+                        }
+                        if ($('ul#tagsList li span.sManufacturer').length == 0) {
+                            if (currURL.indexOf("manufacturer") >= 0) {
+                                currURL = removeParameter(currURL, "manufacturer");
+                                currURL = currURL.replace(/&amp/g, '');
+                            }
+                        }
+                        if ($('ul#tagsList li span.sRating').length == 0) {
+                            if (currURL.indexOf("rating") >= 0) {
+                                currURL = removeParameter(currURL, "rating");
+                                currURL = currURL.replace(/&amp/g, '');
+                            }
+                        }
+                    } else if ($(removedFilter).hasClass("sStock")) {
+                        if ($('ul#tagsList li span.sStock').length == 0) {
+                            if (currURL.indexOf("stock") >= 0) {
+                                currURL = removeParameter(currURL, "stock");
+                                currURL = currURL.replace(/&amp/g, '');
+                            }
+                        }
+                    } else if ((IsRating) && ($('ul#tagsList li span.sRating').length == 0)) {
+                        if (currURL.indexOf("rating") >= 0) {
+                            currURL = removeParameter(currURL, "rating");
+                            currURL = currURL.replace(/&amp/g, '');
+                        }
+                    } else if ((IsPrice) && ($('ul#tagsList li span.sPrice').length == 0)) {
+                        if (currURL.indexOf("price") >= 0) {
+                            currURL = removeParameter(currURL, "price");
+                            currURL = currURL.replace(/&amp/g, '');
+                        }
+                    }
+
+                    if (currURL.endsWith("?")) //removing trailing '?' from url if any
+                        currURL = currURL.slice(0, -1);
+
+                    npAccFiltersPushStateUrl(currURL);
+                callAjax(currURL,'@ViewBag.cahced');
+                    e.handled = true;
+                }
+            });
+        </script>
+}
+
+@if (Model.FiterDisplayMode)
+{
+        <script type="text/javascript">
+            $("div.group div.dropdown-title").live("click", function (e) {
+                if (e.handled != true) {
+                    $(this).next("div.dropdown-list").toggle();
+                    e.handled = true;
+                }
+            });
+        </script>
+}
+
+</div>
+<!-- This site is optimized for best performance with the nopAccelerate - http://www.nopaccelerate.com/ -->

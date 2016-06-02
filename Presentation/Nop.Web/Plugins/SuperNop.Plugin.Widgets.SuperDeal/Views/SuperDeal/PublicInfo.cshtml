@@ -1,0 +1,98 @@
+﻿@model SuperNop.Plugin.Widgets.SuperDeal.Models.SuperDealPublicInfoModel
+@{
+    Layout = "";
+    Html.AddScriptParts("~/Plugins/SuperNop.Plugin.Widgets.SuperDeal/Content/jquery.jcarousel.min.js");
+    Html.AddScriptParts("~/Plugins/SuperNop.Plugin.Widgets.SuperDeal/Content/jcarousel.responsive.js");
+    Html.AddCssFileParts("~/Plugins/SuperNop.Plugin.Widgets.SuperDeal/Content/jcarousel.responsive.css");
+    Html.AddCssFileParts("~/Plugins/SuperNop.Plugin.Widgets.SuperDeal/Content/snc.style.css");
+}
+@using Nop.Web.Framework.UI
+
+<div id="sncdealstabs" class="sncdeals-wrapper">
+    <ul>
+        @if (Model.EnableTodaysDeal)
+        {
+            <li><a href="#todaydeals">@T("Admin.Plugin.SuperDeal.Web.TodaysDeal")</a></li>
+        }        
+        @if (Model.EnableUpcomingDeal)
+        {
+            <li><a href="#upcomingdeals">@T("Admin.Plugin.SuperDeal.Web.UpcomingDeal")</a></li>
+        }
+        @if (Model.EnableMissedDeal)
+        {
+            <li><a href="#misseddeals">@T("Admin.Plugin.SuperDeal.Web.MissedDeal")</a></li>
+        }
+    </ul>
+    <div id="todaydeals" class="">
+        @if (Model.TodaysDeal.Count > 0)
+        {
+            <div class="product-grid home-page-product-grid jcarousel-wrapper">
+                <div class="item-grid jcarousel">
+                    <ul>
+                        @foreach (var item in Model.TodaysDeal)
+                        {
+                            <li>
+                                <div class="item-box" style="width:99% !important;">
+                                    @Html.Partial("~/Plugins/SuperNop.Plugin.Widgets.SuperDeal/Views/SuperDeal/_ProductBox.cshtml", item)
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <!-- Prev/next controls -->
+                <a href="#" class="jcarousel-control-prev">&lsaquo;</a>
+                <a href="#" class="jcarousel-control-next">&rsaquo;</a>
+            </div>
+        }
+    </div>
+    <div id="upcomingdeals">
+        @if (Model.UpcomingDeal.Count > 0)
+        {
+            <div class="product-grid home-page-product-grid jcarousel-wrapper">
+                <div class="item-grid jcarousel">
+                    <ul>
+                        @foreach (var item in Model.UpcomingDeal)
+                        {
+                            <li>
+                                <div class="item-box" style="width:99% !important;">
+                                    @Html.Partial("~/Plugins/SuperNop.Plugin.Widgets.SuperDeal/Views/SuperDeal/_ProductBox.cshtml", item)
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <!-- Prev/next controls -->
+                <a href="#" class="jcarousel-control-prev">&lsaquo;</a>
+                <a href="#" class="jcarousel-control-next">&rsaquo;</a>
+            </div>
+        }
+    </div>
+    <div id="misseddeals">
+        @if (Model.MissedDeal.Count > 0)
+        {
+            <div class="product-grid home-page-product-grid jcarousel-wrapper">
+                <div class="item-grid jcarousel">
+                    <ul>
+                        @foreach (var item in Model.MissedDeal)
+                        {
+                            <li>
+                                <div class="item-box" style="width:99% !important;">
+                                    @Html.Partial("~/Plugins/SuperNop.Plugin.Widgets.SuperDeal/Views/SuperDeal/_ProductBox.cshtml", item)
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <!-- Prev/next controls -->
+                <a href="#" class="jcarousel-control-prev">&lsaquo;</a>
+                <a href="#" class="jcarousel-control-next">&rsaquo;</a>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#sncdealstabs").tabs();
+    });
+</script>

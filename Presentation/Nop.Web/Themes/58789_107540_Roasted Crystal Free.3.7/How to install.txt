@@ -1,0 +1,14 @@
+***HOW TO INSTALL ROASTED BYTES THEME***
+The name of the zip file follows a standard convention ThemeName.xx.zip.
+
+xx – The latest version number of the theme (usually coincides with NopCommerce Latest Supported Version) 
+Once you download the zip file, you need to extract the zip file on your computer. 
+
+Copy the extracted folder to the <website root>/Themes folder of your NopCommerce installation or If you are using source code version of NopCommerce copy the extracted folder to <website root>/Presentation/Nop.Web/Themes
+
+Now login to your NopCommerce website using your Administration Credentials and go to administration area at Your-Website-Url/Admin
+
+In your administration area, goto Configuration->Settings->General And Miscellaneous Settings
+In the store information tab, find the theme and select the radio button corresponding to the them.
+
+Click save button to complete the theme activation. Your theme is now active.

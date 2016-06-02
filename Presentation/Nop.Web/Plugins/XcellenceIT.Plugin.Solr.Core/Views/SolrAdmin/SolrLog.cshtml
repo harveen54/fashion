@@ -1,0 +1,247 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@{
+    Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+}
+@model XcellenceIT.Plugin.Solr.Core.Models.SolrCoreModel
+@using Nop.Services.Configuration;
+@using Nop.Core.Infrastructure;
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+     <div class="section-header">
+        <div class="title">
+            <img src="@Url.Content("~/Administration/Content/images/ico-configuration.png")" alt="" />
+         Solr Log
+        </div>
+         <div class="options">
+             <input type="button" id="delete-selected" class="k-button" value="@T("Admin.System.Log.DeleteSelected")" />
+             <input type="submit" name="clearallsolrlog" class="k-button" value="@T("Admin.System.Log.ClearLog")" onclick="return confirm('@T("Admin.Common.AreYouSure")'); " />
+         </div>
+    </div>
+    
+    <table class="adminContent">
+         <tr>
+            <td class="adminTitle">
+               <text>Store: </text>
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("SearchStoreId", Model.AvailableStores)
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <button type="submit" id="btnSearch" class="k-button">@T("Admin.Common.Search")</button>
+            </td>
+        </tr>
+    </table>
+
+
+    <table class="adminContent">
+        <tr>
+            <td>
+                   <div id="incremental-product-grid"></div>
+                <script>
+                    $(document).ready(function () {
+                        $("#incremental-product-grid").kendoGrid({
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@Html.Raw(Url.Action("SolrLogList", "SolrAdmin" , new RouteValueDictionary() { { "Namespaces", "XcellenceIT.Plugin.Solr.Core.Controllers" }, { "area", "" } }))",
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: additionalData
+                                    }
+                                },
+                                schema: {
+                                    data: "Data",
+                                    total: "Total",
+                                    errors: "Errors"
+                                },
+                                error: function (e) {
+                                    display_kendoui_grid_error(e);
+                                    // Cancel the changes
+                                    this.cancelChanges();
+                                },
+                                pageSize: 15,
+                                serverPaging: true,
+                                serverFiltering: true,
+                                serverSorting: true
+                            },
+                            pageable: {
+                                refresh: true
+                            },
+                            editable: {
+                                confirmation: false,
+                                mode: "inline"
+                            },
+                            scrollable: false,
+                            // dataBound: onDataBound,
+                            columns: [
+                                {
+                                    field: "Id",
+                                    headerTemplate: "<input id='mastercheckbox' type='checkbox'/>",
+                                    headerAttributes: { style: "text-align:center" },
+                                    attributes: { style: "text-align:center" },
+                                    template: "<input type='checkbox' value='#=Id#' class='checkboxGroups'/>",
+                                    width: 50
+                                },{
+                                    field: "Id",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Id")",
+                                    width: 50
+                                }, {
+                                    field: "ShortMessage",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.ShortMessage")",
+                                    width: 400
+                                }, {
+                                    field: "CreatedOn",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.CreatedOn")",
+                                    width: 150,
+                                    type: "date",
+                                    format: "{0:G}"
+                                }, {
+                                    field: "Store",
+                                    title: "@T("Plugins.XcellenceIT.Solr.Core.Fields.Store")",
+                                    width: 150,
+                                }, {
+                                    field: "Id",
+                                    title: "@T("Admin.Common.View")",
+                                    width: 50,
+                                    template: '<a href="View/#=Id#">@T("Admin.Common.View")</a>'
+                                }
+                            ]
+                        });
+                    });
+                </script>
+            </td>
+        </tr>
+    </table>
+    
+    <script type="text/javascript">
+        var selectedIds = [];
+        $(document).ready(function () {
+            $('#btnSearch').click(function () {
+                var grid = $('#incremental-product-grid').data('kendoGrid');
+                grid.dataSource.page(1); //new search. Set page size to 1
+                grid.dataSource.read();
+                return false;
+            });      
+
+            //"delete selected" button
+            $('#delete-selected').click(function (e) {
+                e.preventDefault();
+
+                var postData = {
+                    selectedIds: selectedIds
+                };
+
+                $.ajax({
+                    cache:false,
+                    type: "POST",
+                    url: "/SolrAdmin/DeleteSelectedSolrLog/",
+                    data: postData,
+                complete: function (data) {
+                    //reload grid
+                    var grid = $('#incremental-product-grid').data('kendoGrid');
+                    grid.dataSource.page(1); //new search. Set page size to 1
+                    //grid.dataSource.read(); we already loaded the grid above using "page" function
+                    //clear selected checkboxes
+                    $('.checkboxGroups').attr('checked', false).change();
+                    selectedIds = [];
+                },
+                error:function (xhr, ajaxOptions, thrownError){
+                    alert(thrownError);
+                },
+                traditional: true
+            });
+            return false;
+            });
+
+
+            $('#mastercheckbox').click(function () {
+                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+            });
+
+            //wire up checkboxes.
+            $('#incremental-product-grid').on('change', 'input[type=checkbox][id!=mastercheckbox]', function (e) {
+                var $check = $(this);
+                if ($check.is(":checked") == true) {
+                    var checked = jQuery.inArray($check.val(), selectedIds);
+                    if (checked == -1) {
+                        //add id to selectedIds.
+                        selectedIds.push($check.val());
+                    }
+                }
+                else {
+                    var checked = jQuery.inArray($check.val(), selectedIds);
+                    if (checked > -1) {
+                        //remove id from selectedIds.
+                        selectedIds = $.grep(selectedIds, function (item, index) {
+                            return item != $check.val();
+                        });
+                    }
+                }
+                updateMasterCheckbox();
+            });
+        });
+
+        function additionalData() {
+            return addAntiForgeryToken({
+                SearchStoreId: $('#SearchStoreId').val()
+            });
+        }
+
+        function onDataBound(e) {
+            $('#incremental-product-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+                var currentId = $(this).val();
+                var checked = jQuery.inArray(currentId, selectedIds);
+                //set checked based on if current checkbox's value is in selectedIds.
+                $(this).attr('checked', checked > -1);
+            });
+
+            updateMasterCheckbox();
+        }
+
+        function updateMasterCheckbox() {
+            var numChkBoxes = $('#incremental-product-grid input[type=checkbox][id!=mastercheckbox]').length;
+            var numChkBoxesChecked = $('#incremental-product-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+        }
+    </script>
+}
+                

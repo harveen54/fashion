@@ -1,0 +1,80 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Root.Head.cshtml";
+}
+@Html.Widget("body_start_html_tag_after")
+@Html.Partial("_Notifications")
+@Html.Action("JavaScriptDisabledWarning", "Common")
+@Html.Partial("OldInternetExplorerWarning")
+
+@Html.Action("AdminHeaderLinks", "Common")
+
+@Html.Partial("Header")
+@Html.Action("TopMenu", "Catalog")
+<script type="text/javascript">
+    AjaxCart.init(false, '.header-links .cart-qty', '.header-links .wishlist-qty', '#flyout-cart');
+</script>
+@Html.Widget("container_before")
+
+@Html.Widget("content_before")
+@if (IsSectionDefined("Breadcrumb"))
+{
+    @RenderSection("Breadcrumb")
+}
+@RenderBody()
+@Html.Widget("content_after")
+
+@Html.Action("Footer", "Common")
+@Html.Action("EuCookieLaw", "Common")
+@Html.Widget("body_end_html_tag_before")
+
+<script>
+    $(function () {
+        $(".tooltipOn").tooltip({
+            'placement': 'top'
+        });
+    });
+</script>
+<script type="text/javascript">
+    $('#topcartlink').hover(function () {
+        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn();
+    }, function () {
+        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut();
+    });
+</script>
+
+<div style="color: black;" class="modal fade" id="myModal" role="dialog">
+
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h2 style="background-color: black; color: white;" class="text-center">Please Help To Save 3 Lives</h2>
+                        <h4 class="modal-title text-center">
+                            We have observed that you have not entered the details in system yet. Please Help Us, provide your information.</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <h4 class="text-center">Your Blood Group:
+                            
+                            </h4>
+                        </div>
+                        <div class="row">
+                            <h4 class="text-center">Current Location:
+                           </h4>
+
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                      
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+

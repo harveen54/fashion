@@ -1,0 +1,5 @@
+﻿@using ima9ines.Nop.ProductReviews
+@using ima9ines.Nop.ProductReviews.Web.Models
+@using ima9ines.Nop.Core.Plugins
+@model DisplayWidgetModel
+@Html.Partial("_ProductReviewList".GetWebViewFor(typeof(Plugin)), Model.ProductReviews)

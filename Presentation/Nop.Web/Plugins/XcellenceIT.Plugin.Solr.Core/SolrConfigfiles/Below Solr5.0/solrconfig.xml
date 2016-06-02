@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- nopCommerce 3.7 - nopAccelerate 3.6.3-->
+<!-- ********************************************************************
+*                                                                       *
+* nopAccelerate - Solr Integration Extension for nopCommerce            *
+* Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+*                                                                       *
+*************************************************************************
+*                                                                       *
+* Email: info@nopaccelerate.com                                         *
+* Website: http://www.nopaccelerate.com                                 *
+*                                                                       *
+*************************************************************************
+*                                                                       *
+* This  software is furnished  under a license  and  may  be  used  and *
+* modified  only in  accordance with the terms of such license and with *
+* the  inclusion of the above  copyright notice.  This software or  any *
+* other copies thereof may not be provided or  otherwise made available *
+* to any  other  person.   No title to and ownership of the software is *
+* hereby transferred.                                                   *
+*                                                                       *
+* You may not reverse  engineer, decompile, defeat  license  encryption *
+* mechanisms  or  disassemble this software product or software product *
+* license.  Xcellence-IT may terminate this license if you don't comply *
+* with  any  of  the  terms and conditions set forth in  our  end  user *
+* license agreement (EULA).  In such event,  licensee  agrees to return *
+* licensor  or destroy  all copies of software  upon termination of the *
+* license.                                                              *
+*                                                                       *
+* Please see the  License file for the full End User License Agreement. *
+* The  complete license agreement is also available on  our  website at *
+* http://www.nopaccelerate.com/terms/     				                      *
+*                                                                       *
+*************************************************************************
+-->
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!-- 
+     For more details about configurations options that may appear in
+     this file, see http://wiki.apache.org/solr/SolrConfigXml. 
+-->
+<config>
+ 
+  <luceneMatchVersion>LUCENE_40</luceneMatchVersion>
+  
+  <lib dir="/usr/share/solr/contrib/extraction/lib" regex=".*\.jar" />
+  <lib dir="/usr/share/solr/dist/" regex="apache-solr-cell-\d.*\.jar" />
+  <lib dir="/usr/share/solr/contrib/clustering/lib/" regex=".*\.jar" />
+  <lib dir="/usr/share/solr/dist/" regex="apache-solr-clustering-\d.*\.jar" />
+  <lib dir="/usr/share/solr/contrib/langid/lib/" regex=".*\.jar" />
+  <lib dir="/usr/share/solr/dist/" regex="apache-solr-langid-\d.*\.jar" />
+  <lib dir="/usr/share/solr/contrib/velocity/lib" regex=".*\.jar" />
+  <lib dir="/usr/share/solr/dist/" regex="apache-solr-velocity-\d.*\.jar" />
+  <lib dir="/total/crap/dir/ignored" /> 
+
+  <dataDir>${solr.data.dir:}</dataDir>
+
+  <directoryFactory name="DirectoryFactory" 
+                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/> 
+
+  <updateHandler class="solr.DirectUpdateHandler2">
+
+     <autoCommit> 
+       <maxTime>15000</maxTime> 
+       <openSearcher>false</openSearcher> 
+     </autoCommit>
+
+    <updateLog>
+      <str name="dir">${solr.data.dir:}</str>
+    </updateLog>
+  
+  </updateHandler>
+  
+  
+  <query>
+    
+    <maxBooleanClauses>1024</maxBooleanClauses> <!-- Need Expert Advice. -->
+
+    <filterCache class="solr.FastLRUCache"
+                 size="512"
+                 initialSize="512"
+                 autowarmCount="0"/>
+
+    <queryResultCache class="solr.LRUCache"
+                     size="512"
+                     initialSize="512"
+                     autowarmCount="0"/>
+   
+    <documentCache class="solr.LRUCache"
+                   size="512"
+                   initialSize="512"
+                   autowarmCount="0"/>
+    
+    
+    <enableLazyFieldLoading>true</enableLazyFieldLoading>
+
+   
+   <queryResultWindowSize>20</queryResultWindowSize>
+
+   
+   <queryResultMaxDocsCached>200</queryResultMaxDocsCached>
+
+    <listener event="newSearcher" class="solr.QuerySenderListener">
+      <arr name="queries">
+      </arr>
+    </listener>
+    <listener event="firstSearcher" class="solr.QuerySenderListener">
+      <arr name="queries">
+        <lst>
+          <str name="q">static firstSearcher warming in solrconfig.xml</str>
+        </lst>
+      </arr>
+    </listener>
+
+    <useColdSearcher>false</useColdSearcher> <!-- Need Expert Advice. -->
+
+    <maxWarmingSearchers>2</maxWarmingSearchers> 
+
+  </query>
+
+  <requestDispatcher handleSelect="false" >
+    <httpCaching never304="true" />
+  </requestDispatcher>
+
+ 
+  <requestHandler name="/select" class="solr.SearchHandler" >
+    
+     <lst name="defaults">
+      <str name="echoParams">explicit</str>
+      <int name="rows">10</int>
+	  <str name="field">Name</str>
+	  <str name="spellcheck">on</str>	  
+	  <str name="spellcheck.collate">true</str>
+	  <str name="spellcheck.dictionary">default</str>
+      <str name="spellcheck.dictionary">wordbreak</str>
+      <str name="spellcheck.maxcollations">5</str> 
+      <str name="spellcheck.count">5</str>
+	  <str name="spellcheck.alternativetermcount">2</str>
+	  <str name="spellcheck.maxresultsforsuggest">5</str>
+	  <str name="spellcheck.maxcollationtries">5</str>
+     </lst>
+	 
+	<arr name="last-components">
+      <str>spellcheck</str>
+    </arr>
+
+    
+ </requestHandler>
+
+  
+  <requestHandler name="/update" class="solr.UpdateRequestHandler">
+  </requestHandler>
+
+  <requestHandler name="/admin/" 
+                  class="solr.admin.AdminHandlers" />
+
+  <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
+    <lst name="invariants">
+      <str name="q">solrpingquery</str>
+    </lst>
+    <lst name="defaults">
+      <str name="echoParams">all</str>
+    </lst>
+  </requestHandler>
+
+ 
+
+  <requestHandler name="/replication" class="solr.ReplicationHandler" > <!-- Need Expert Advice. -->
+  </requestHandler> 
+
+  <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
+
+    <str name="queryAnalyzerFieldType">text</str>
+
+    <lst name="spellchecker">
+      <str name="name">default</str>
+      <str name="field">SpellContent</str>
+	  <str name="classname">solr.DirectSolrSpellChecker</str>
+      <str name="distanceMeasure">internal</str>
+      <float name="accuracy">0.5</float>
+      <int name="maxEdits">2</int>
+      <int name="minPrefix">1</int>
+      <int name="maxInspections">5</int>
+      <int name="minQueryLength">4</int>
+      <float name="maxQueryFrequency">0.01</float>
+
+    </lst>
+    
+    <lst name="spellchecker">
+      <str name="name">wordbreak</str>
+      <str name="classname">solr.WordBreakSolrSpellChecker</str>      
+      <str name="field">SpellContent</str>
+	  <str name="combineWords">true</str>
+      <str name="breakWords">false</str>
+      <int name="maxChanges">10</int>
+	  
+    </lst>
+
+  </searchComponent>
+
+  <requestHandler name="/spell" class="solr.SearchHandler" startup="lazy">
+    <lst name="defaults">
+      <str name="df">Name</str>
+      <str name="spellcheck.dictionary">default</str>
+      <str name="spellcheck.dictionary">wordbreak</str>
+      <str name="spellcheck">on</str>
+      <str name="spellcheck.extendedResults">true</str>       
+      <str name="spellcheck.count">10</str>
+      <str name="spellcheck.alternativeTermCount">5</str>
+      <str name="spellcheck.maxResultsForSuggest">5</str>       
+      <str name="spellcheck.collate">true</str>
+      <str name="spellcheck.collateExtendedResults">true</str>  
+      <str name="spellcheck.maxCollationTries">10</str>
+      <str name="spellcheck.maxCollations">5</str>         
+    </lst>
+    <arr name="last-components">
+      <str>spellcheck</str>
+    </arr>
+  </requestHandler>
+
+  
+  <admin>
+    <defaultQuery>*:*</defaultQuery>
+  </admin>
+
+</config>

@@ -1,0 +1,71 @@
+﻿@* *************************************************************************
+ *                                                                       *
+ * nopAccelerate - Solr Integration Extension for nopCommerce            *
+ * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * Email: info@nopaccelerate.com                                         *
+ * Website: http://www.nopaccelerate.com                                 *
+ *                                                                       *
+ *************************************************************************
+ *                                                                       *
+ * This  software is furnished  under a license  and  may  be  used  and *
+ * modified  only in  accordance with the terms of such license and with *
+ * the  inclusion of the above  copyright notice.  This software or  any *
+ * other copies thereof may not be provided or  otherwise made available *
+ * to any  other  person.   No title to and ownership of the software is *
+ * hereby transferred.                                                   *
+ *                                                                       *
+ * You may not reverse  engineer, decompile, defeat  license  encryption *
+ * mechanisms  or  disassemble this software product or software product *
+ * license.  Xcellence-IT may terminate this license if you don't comply *
+ * with  any  of  the  terms and conditions set forth in  our  end  user *
+ * license agreement (EULA).  In such event,  licensee  agrees to return *
+ * licensor  or destroy  all copies of software  upon termination of the *
+ * license.                                                              *
+ *                                                                       *
+ * Please see the  License file for the full End User License Agreement. *
+ * The  complete license agreement is also available on  our  website at * 
+ * http://www.nopaccelerate.com/terms/                                   *
+ *                                                                       *
+ ************************************************************************* *@
+
+@using XcellenceIT.Plugin.Solr.Search.Models
+@model SearchPagingFilteringModel
+
+<div class="product-selectors">
+    <input type="hidden" value="@ViewBag.cached" id="expiretime" />
+    @*view mode*@
+    @if (Model.AllowProductViewModeChanging)
+    {
+        <div class="product-viewmode">
+            <span>@T("Catalog.ViewMode")</span>
+            @if (Model.AvailableViewModes.Count > 1)
+            {
+                var gridMode = Model.AvailableViewModes[0];
+                var listMode = Model.AvailableViewModes[1];
+
+                <a class="viewmode-icon grid @if(gridMode.Selected){<text>selected</text>}" href="@gridMode.Value" onclick = "npAccFiltersPushStateUrl('@gridMode.Value');callAjax('@gridMode.Value','@ViewBag.cached'); return false;" title="@gridMode.Text">@gridMode.Text</a>
+                <a class="viewmode-icon list @if(listMode.Selected){<text>selected</text>}" href="@listMode.Value" onclick = "npAccFiltersPushStateUrl('@listMode.Value');callAjax('@listMode.Value','@ViewBag.cached'); return false;" title="@listMode.Text">@listMode.Text</a>
+            }
+        </div>
+    }
+    @*sorting*@
+    @if (Model.AllowProductSorting)
+    {
+        <div class="product-sorting">
+            <span>@T("Catalog.OrderBy")</span>
+            @Html.DropDownList("products-orderby", Model.AvailableSortOptions, new { onchange = "npAccFiltersPushStateUrl(this.value);callAjax(this.value,expiretime.value); return false;" })
+        </div>
+    }
+    @*page size*@
+    @if (Model.AllowCustomersToSelectPageSize)
+    {
+        <div class="product-page-size">
+            <span>@T("Catalog.PageSize")</span>
+            @Html.DropDownList("products-pagesize", Model.PageSizeOptions, new { onchange = "npAccFiltersPushStateUrl(this.value);callAjax(this.value,expiretime.value); return false;" })
+            <span>@T("Catalog.PageSize.PerPage")</span>
+        </div>
+    }
+</div>

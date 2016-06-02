@@ -1,0 +1,158 @@
+﻿/* *************************************************************************
+// *                                                                       *
+// * nopAccelerate - Solr Integration Extension for nopCommerce            *
+// * Copyright (c) Xcellence-IT. All Rights Reserved.                      *
+// *                                                                       *
+// *************************************************************************
+// *                                                                       *
+// * Email: info@nopaccelerate.com                                         *
+// * Website: http://www.nopaccelerate.com                                 *
+// *                                                                       *
+// *************************************************************************
+// *                                                                       *
+// * This  software is furnished  under a license  and  may  be  used  and *
+// * modified  only in  accordance with the terms of such license and with *
+// * the  inclusion of the above  copyright notice.  This software or  any *
+// * other copies thereof may not be provided or  otherwise made available *
+// * to any  other  person.   No title to and ownership of the software is *
+// * hereby transferred.                                                   *
+// *                                                                       *
+// * You may not reverse  engineer, decompile, defeat  license  encryption *
+// * mechanisms  or  disassemble this software product or software product *
+// * license.  Xcellence-IT may terminate this license if you don't comply *
+// * with  any  of  the  terms and conditions set forth in  our  end  user *
+// * license agreement (EULA).  In such event,  licensee  agrees to return *
+// * licensor  or destroy  all copies of software  upon termination of the *
+// * license.                                                              *
+// *                                                                       *
+// * Please see the  License file for the full End User License Agreement. *
+// * The  complete license agreement is also available on  our  website at * 
+// * http://www.nopaccelerate.com/terms/                                   *
+// *                                                                       *
+// ************************************************************************* */
+
+/*Style for error message*/
+.alert-success {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #3c763d;
+    padding:10px;
+    display:inline-block;
+    line-height:10px;
+}
+.alert-info {
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    color: #31708f;
+    padding:10px;
+    display:inline-block;
+    line-height:10px;
+}
+.alert-warning {
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+    color: #8a6d3b;
+    padding:10px;
+    display:inline-block;
+    line-height:10px;
+}
+.alert-danger {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+    padding:10px;
+    display:inline-block;
+    line-height:10px;
+}
+.license-Details-108{
+  background:#fcf8e3;
+  border:1px solid #faebcc;
+  margin:10px 0px;
+  float:left;
+  width:100%;
+  padding-bottom:5px;
+}
+.license-Details-102{
+  background:#d9edf7;
+  border:1px solid #bce8f1;
+  margin:10px 0px;
+  float:left;
+  width:100%;
+}
+.license-Details-103{
+  background:#f2dede;
+  border:1px solid #ebccd1;
+  margin:10px 0px;
+  float:left;
+  width:100%;
+}
+.license-Details-104{
+  background:#dff0d8;
+  border:1px solid #d6e9c6;
+  margin:10px 0px;
+  float:left;
+  width:100%;
+}
+.license-Details-108 hr {
+  border-color: -moz-use-text-color -moz-use-text-color #8a6d3b;
+  border-style: none none solid;
+  border-width: medium medium 1px;
+  float: left;
+  margin-bottom:5px;
+  width: 100%;
+}
+.license-Details-102 hr {
+  border-color: -moz-use-text-color -moz-use-text-color #31708f;
+  border-style: none none solid;
+  border-width: medium medium 1px;
+  float: left;
+  margin-bottom:5px;
+  width: 100%;
+}
+.license-Details-104 hr {
+  border-color: -moz-use-text-color -moz-use-text-color #3c763d;
+  border-style: none none solid;
+  border-width: medium medium 1px;
+  float: left;
+  margin-bottom:5px;
+  width: 100%;
+}
+.license-Details-103 hr {
+  border-color: -moz-use-text-color -moz-use-text-color #a94442;
+  border-style: none none solid;
+  border-width: medium medium 1px;
+  float: left;
+  margin-bottom:5px;
+  width: 100%;
+}
+.license-Details-108 .license-value{font-weight:bold;color:#8a6d3b;}
+.license-Details-102 .license-value{font-weight:bold;color:#31708f;}
+.license-Details-103 .license-value{font-weight:bold;color:#a94442;}
+.license-Details-104 .license-value{font-weight:bold;color:#3c763d;}
+.license-Details-108 .alert-warning,.license-Details-102 .alert-info,.license-Details-103 .alert-danger,.license-Details-104 .alert-success{font-style:italic;font-weight:bold;line-height: 20px;}
+.license-Details-108 .title > img,.license-Details-102 .title > img,.license-Details-103 .title > img,.license-Details-104 .title > img{display:none;}
+.license-Details-108 ul li,.license-Details-103 ul li,.license-Details-102 ul li,.license-Details-104 ul li{list-style:none;padding-bottom:5px;padding-top:5px;}
+.license-Details-108 ul,.license-Details-103 ul,.license-Details-102 ul,.license-Details-104 ul{padding-left:5px;margin:0;}
+.license-Details-108 .title,.license-Details-103 .title,.license-Details-102 .title,.license-Details-104 .title{font-weight:700;}
+.license-notice,.license-wrapper{float:left;width:100%;}
+.license-notice > p{padding:0px 10px;}
+.line{padding:0px 10px;}
+.domain-name,.product-limit,.license-status,.license-type{float:left;width:25%;}
+.license-domain,.limit,.status{list-style:none;float:left;margin-right:5px;}
+.license-domain label{padding-left:5px;}
+.multi-store-scope{margin-bottom:0px;}
+.section-header{clear:both;}   
+
+
+/*Style for license-key notice at admin-side while saving key at 1st time*/
+.license-key-notice
+{
+    padding:5px;
+    border-radius:4px;
+    border: 1px solid #ebccd1;
+    color:#a94442;
+    background-color:#f2dede;
+    font-weight:bold;
+    font-style:italic;
+    margin-bottom: 6px;
+}

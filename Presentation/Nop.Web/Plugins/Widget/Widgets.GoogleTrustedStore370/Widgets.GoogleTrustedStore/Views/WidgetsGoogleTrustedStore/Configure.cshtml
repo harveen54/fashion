@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "";
+}
+@model Nop.Plugin.Widgets.GoogleTrustedStore.Models.ConfigurationModel
+@using Nop.Web.Framework;
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.Script):
+                <br />
+                <em>@T("Plugins.Widgets.GoogleTrustedStore.Script.hint").Text</em>
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.Script, new { style = "width:600px;height:300px;" })
+                @Html.ValidationMessageFor(model => model.Script)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.Domain):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Domain)
+                @Html.ValidationMessageFor(model => model.Domain)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.StoreId):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.StoreId)
+                @Html.ValidationMessageFor(model => model.StoreId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.ProductSearchCountry):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductSearchCountry)
+                @Html.ValidationMessageFor(model => model.ProductSearchCountry)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.ProductSerchLanguage):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ProductSerchLanguage)
+                @Html.ValidationMessageFor(model => model.ProductSerchLanguage)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.EstimatedShipDate):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.EstimatedShipDate)
+                @Html.ValidationMessageFor(model => model.EstimatedShipDate)
+            </td>
+        </tr>       
+        <tr>
+            <td class="adminTitle">
+                @Html.NopLabelFor(model => model.EstimatedDeliveryDate):
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.EstimatedDeliveryDate)
+                @Html.ValidationMessageFor(model => model.EstimatedDeliveryDate)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" name="save" class="k-button" value="@T("Admin.Common.Save")" />
+            </td>
+        </tr>
+    </table>
+
+}

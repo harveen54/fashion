@@ -1,0 +1,34 @@
+End User License Agreement
+
+This End User License Agreement (this “Agreement”) is a legal contract between you, as either an individual or an Entity (as defined below), and us(SuperNop Solutions).
+READ THE TERMS AND CONDITIONS OF THIS AGREEMENT CAREFULLY BEFORE DOWNLOADING, INSTALLING, ACCESSING OR USING SUPERNOP SOLUTIONS' PROPRIETARY SOFTWARE, INCLUDING SOFTWARE AS A SERVICE, ACCOMPANIED BY THIS AGREEMENT (the “SOFTWARE”).  
+THE SOFTWARE IS LICENSED TO YOU UNDER THIS AGREEMENT, NOT SOLD TO YOU.  BY DOWNLOADING, INSTALLING, ACCESSING OR USING THE SOFTWARE, YOU ACKNOWLEDGE THAT YOU HAVE READ THIS AGREEMENT, THAT YOU UNDERSTAND THIS , AND THAT YOU ACCEPT AND AGREE TO BE BOUND BY ITS TERMS AND CONDITIONS.   
+IF AT ANY TIME YOU ARE NOT WILLING TO BE BOUND BY THE TERMS AND CONDITIONS OF THIS AGREEMENT, YOU SHOULD UNINSTALL, REMOVE OR TERMINATE THE DOWNLOAD AND/OR INSTALLATION PROCESS, PLEASE DON NOT ACCESS, USE OR INSTALL OUR PRODUCT AND IMMEDIATELY DELETE ANY COPIES YOU MAY HAVE. THIS AGREEMENT, ALONG WITH ANY ADDITIONAL TERMS OR POLICIES INCORPORATED HEREIN BY REFERENCE, REPRESENTS THE ENTIRE AGREEMENT BETWEEN YOU AND SUPERNOP SOLUTIONS CONCERNING THE SOFTWARE.
+
+1. License.
+1.1. Grant of License. 
+Subject to your full and ongoing compliance with the terms and conditions of this Agreement, including without limitation payment of all applicable license fees, the applicable SuperNop entity from which you obtained the Software hereby grants to you, and you accept, a personal, limited, nontransferable, non-assignable, revocable license to use the Software during the Term in machine-readable, object code form only, and the user manuals accompanying the Software (the “Documentation”), only as authorized in this Agreement. For purposes of this Agreement, the “Software” includes any updates, enhancements, modifications, revisions, or additions to the Software made by us and made available to end-users. 
+
+1.2  Distribution. 
+All of our products(including free versions) we sell is having unique identity that has been mapped with the store URL you have entered at the time of purchasing. So we are tracking all details. Even our products are not costly so please don't think about doing any illegal or unauthorised kind of activity. 
+You are not allowed to distribute or redistribute the SuperNop Solutions Products(software) to third parties. Any distribution without our permission, including noncommercial distribution is considered as violation of this Agreement and entails liability, according to the current law.
+
+1.3  Scope of Use. 
+Your license to use the Software is conditioned on the following license restrictions, and any use of the Software in violation of any of these restrictions, or any of the other terms of this Agreement is a breach of this Agreement and is unlicensed.  You may use one single domain license key on a single device owned, leased, or otherwise controlled by you, at a single time. If you have multiple domain keys for the Software, you may install and use as many copies of the Plugin as you have license keys. 
+
+1.4. Trial Licenses.  
+In the event you obtained a trial or evaluation version of the Plugin, it will come with a trial activation key that activates the Plugin for a limited time period (Most cases 30 days).  You may use the Software during the Trial Period for commercial purposes evaluate the suitability of the Plugin for your needs. Upon the expiration of the Trial Period you must either purchase an activation key or uninstall or delete the Plugin and related all files provided by us.  If you do not purchase an activation key prior to the expiration of the Trial Period, this Agreement, and all your rights and licenses here under will terminate at the expiration of the Trial Period.
+
+1.5. Copies and Modifications. 
+You are allowed to modify View files only to design as per your theme. But it is a restriction and prohibited under applicable law, you may not reverse engineer, decompile, disassemble, or otherwise translate the Plugin Source Code or any license keys you have obtained. You can not do any tempering with our license keys and licensing software even with our servers. Even if you have purchased full source code then also you can not do any tempering with licensing servers. We are watching you how you are using our products and you not doing any cheating with us.
+
+1.6. Respect individuals. 
+You should respect our team members and should not be aggressive with our team if any issue, bug or escalations comes in our product. It is our responsibility to solve our source code or any our implementation related issue.
+
+1.7  Support and Maintenance Services, Updates, Upgrades.  
+We will provide all support or maintenance services under this Agreement.  We may offer support or maintenance related services separately.  If you have purchased SuperNop support or maintenance services with the plugin, these services are provided to you under the terms and conditions accompanying the applicable service. 
+
+1.8. Additional Terms.  
+Depending on the country in which you are located, additional terms and restrictions may apply, as set forth in Exhibit A (the “Additional Terms”), which terms are incorporated by reference herein and made a part of this Agreement.  
+
+BY INSTALLING OR USING OUR PRODUCT OR PLUGIN YOU ACKNOWLEDGE THAT YOU HAVE READ THIS AGREEMENT, YOU UNSDERSTAND AND YOU ARE AGREE WITH ALL OUR TERMS AND CONDITIONS. ADDITIONAL YOU ARE AGREE THAT YOU ARE ALLOWING SUPERNOP SOLUTIONS TO PUT YOUR STORE, COMPANY URL ON OUR PORTFOLIO PAGE. PLEASE NOTE IF YOU DON'T WANT US TO DO THIS PLEASE LET US KNOW EXPLICITLY BY WRITTEN EMAIL OR ANY COMMUNICATION CHANNEL.

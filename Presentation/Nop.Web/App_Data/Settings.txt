@@ -1,0 +1,2 @@
+DataProvider: sqlserver
+DataConnectionString: Data Source=hp-Hp\Harveen;Initial Catalog=Dev_Online_Tution;Integrated Security=True;Persist Security Info=False
